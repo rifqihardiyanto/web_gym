@@ -43,6 +43,11 @@
                                 <input type="text" id="phone" name="phone" required class="form-control"
                                     placeholder="Nomor Telepon" />
                             </div>
+                            <div class="col mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="text" id="email" name="email" required class="form-control"
+                                    placeholder="Email" />
+                            </div>
                             <!-- Tanggal Kedaluwarsa -->
                             <div class="col mb-3">
                                 <label for="exp" class="form-label">Masa Berlaku</label>
@@ -71,6 +76,7 @@
                         <th>Nama Member</th>
                         <th>Nomor Telepon</th>
                         <th>ID Member</th>
+                        <th>Email</th>
                         <th>Masa Berlaku</th>
                         <th>Sisa Hari</th>
                         <th>Aksi</th>
@@ -109,11 +115,13 @@
                     <td> ${val.name} </td> 
                     <td> ${val.phone} </td> 
                     <td> ${val.id_member} </td> 
+                    <td> ${val.email} </td> 
                     <td> ${val.exp} </td>
                     <td> ${remainingDays} hari </td>
                     <td>
                         <a data-toggle="modal" href="#modal-form" data-id="${val.id}" class="btn btn-warning modal-ubah">Edit </a>    
                         <a href="#" data-id="${val.id}" class="btn btn-danger btn-hapus">Hapus </a>    
+                        <a href="#" data-id="${val.id}" class="btn btn-info btn-wa">Kirim WhatsApp </a>    
                     </td>
                 </tr>`;
                     });
@@ -121,6 +129,33 @@
                     $('tbody').append(row);
                 }
             });
+
+            $(document).on('click', '.btn-wa', function() {
+                const id = $(this).data('id');
+
+                // Mengambil data member dari server untuk membuat pesan
+                $.get(`/api/members/${id}`, function({
+                    data
+                }) {
+                    const phoneNumber = data.phone;
+                    const idMember = data.id_member;
+                    const name = data.name;
+                    const exp = data.exp;
+                    const message = encodeURIComponent(
+                        `Halo, ${name}. ID Member Anda adalah ${idMember}. Berakhir sampai ${exp}`);
+
+                    // Mengarahkan pengguna ke WhatsApp
+                    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+
+                    // Konfirmasi pengiriman pesan
+                    const confirmSend = confirm('Yakin ingin mengirim pesan WhatsApp?');
+
+                    if (confirmSend) {
+                        window.location.href = whatsappUrl;
+                    }
+                });
+            });
+
 
             $(document).on('click', '.btn-hapus', function() {
                 const id = $(this).data('id');
@@ -130,7 +165,7 @@
 
                 if (confirm_dialog) {
                     $.ajax({
-                        url: '/api/subcategories/' + id,
+                        url: '/api/members/' + id,
                         type: "DELETE",
                         headers: {
                             "Authorization": "Bearer" + token
@@ -154,6 +189,7 @@
                 $('select[name="type_member"]').val('');
                 $('input[name="name"]').val('');
                 $('input[name="phone"]').val('');
+                $('input[name="email"]').val('');
                 $('input[name="exp"]').val('');
 
                 $('.form-member').submit(function(e) {
@@ -192,6 +228,7 @@
                     $('select[name="type_member"]').val(data.type_member)
                     $('input[name="name"]').val(data.name)
                     $('input[name="phone"]').val(data.phone)
+                    $('input[name="email"]').val(data.email)
                     $('input[name="exp"]').val(data.exp)
                 })
 
