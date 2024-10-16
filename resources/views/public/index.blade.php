@@ -21,6 +21,10 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('public/css/preset.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('public/css/responsive.css') }}">
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    
+
     <!--[if lt IE 9]>
               <script src="js/html5shiv.js"></script>
               <script src="js/respond.min.js"></script>

@@ -4,6 +4,10 @@
 
 @section('container')
 
+    <!-- SweetAlert CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
     <!-- Bootstrap Table with Header - Dark -->
     <div class="col-lg-4 col-md-6">
         <div class="mt-3">
@@ -45,7 +49,7 @@
                             </div>
                             <div class="col mb-3">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="text" id="email" name="email" required class="form-control"
+                                <input type="text" id="email" name="email" class="form-control"
                                     placeholder="Email" />
                             </div>
                             <!-- Tanggal Kedaluwarsa -->
@@ -95,45 +99,47 @@
 @push('js')
     <script>
         $(function() {
-            $.ajax({
-                url: '/api/members',
-                success: function({
-                    data
-                }) {
-                    let row;
-                    data.map(function(val, index) {
-                        const today = new Date();
-                        const expDate = new Date(val.exp);
+            // Function to load members into the table
+            function loadMembers() {
+                $.ajax({
+                    url: '/api/members',
+                    success: function({
+                        data
+                    }) {
+                        let row = '';
+                        data.map(function(val) {
+                            const today = new Date();
+                            const expDate = new Date(val.exp);
+                            const timeDiff = expDate.getTime() - today.getTime();
+                            const remainingDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
-                        // Menghitung selisih hari
-                        const timeDiff = expDate.getTime() - today.getTime();
-                        const remainingDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                            row += `
+                                <tr> 
+                                    <td> ${val.category.name} </td> 
+                                    <td> ${val.name} </td> 
+                                    <td> ${val.phone} </td> 
+                                    <td> ${val.id_member} </td> 
+                                    <td> ${val.email} </td> 
+                                    <td> ${val.exp} </td>
+                                    <td> ${remainingDays} hari </td>
+                                    <td>
+                                        <a data-toggle="modal" href="#modal-form" data-id="${val.id}" class="btn btn-warning modal-ubah">Edit </a>    
+                                        <a href="#" data-id="${val.id}" class="btn btn-danger btn-hapus">Hapus </a>    
+                                        <a href="#" data-id="${val.id}" class="btn btn-info btn-wa">Kirim WhatsApp </a>    
+                                    </td>
+                                </tr>`;
+                        });
 
-                        row += `
-                <tr> 
-                    <td> ${val.category.name} </td> 
-                    <td> ${val.name} </td> 
-                    <td> ${val.phone} </td> 
-                    <td> ${val.id_member} </td> 
-                    <td> ${val.email} </td> 
-                    <td> ${val.exp} </td>
-                    <td> ${remainingDays} hari </td>
-                    <td>
-                        <a data-toggle="modal" href="#modal-form" data-id="${val.id}" class="btn btn-warning modal-ubah">Edit </a>    
-                        <a href="#" data-id="${val.id}" class="btn btn-danger btn-hapus">Hapus </a>    
-                        <a href="#" data-id="${val.id}" class="btn btn-info btn-wa">Kirim WhatsApp </a>    
-                    </td>
-                </tr>`;
-                    });
+                        $('tbody').html(row); // Update tbody content
+                    }
+                });
+            }
 
-                    $('tbody').append(row);
-                }
-            });
+            loadMembers(); // Load members initially
 
             $(document).on('click', '.btn-wa', function() {
                 const id = $(this).data('id');
 
-                // Mengambil data member dari server untuk membuat pesan
                 $.get(`/api/members/${id}`, function({
                     data
                 }) {
@@ -142,12 +148,11 @@
                     const name = data.name;
                     const exp = data.exp;
                     const message = encodeURIComponent(
-                        `Halo, ${name}. ID Member Anda adalah ${idMember}. Berakhir sampai ${exp}`);
+                        `Halo, ${name}. ID Member Anda adalah ${idMember}. Berakhir sampai ${exp}`
+                    );
 
-                    // Mengarahkan pengguna ke WhatsApp
                     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
 
-                    // Konfirmasi pengiriman pesan
                     const confirmSend = confirm('Yakin ingin mengirim pesan WhatsApp?');
 
                     if (confirmSend) {
@@ -156,31 +161,34 @@
                 });
             });
 
-
             $(document).on('click', '.btn-hapus', function() {
                 const id = $(this).data('id');
                 const token = localStorage.getItem('token');
 
-                confirm_dialog = confirm('Yakin ingin menghapus?');
+                const confirm_dialog = confirm('Yakin ingin menghapus?');
 
                 if (confirm_dialog) {
                     $.ajax({
                         url: '/api/members/' + id,
                         type: "DELETE",
                         headers: {
-                            "Authorization": "Bearer" + token
+                            "Authorization": "Bearer " + token
                         },
                         success: function(data) {
                             if (data.success) {
-                                alert("Data berhasil di hapus");
-                                location.reload();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Sukses',
+                                    text: 'Data berhasil dihapus!',
+                                    backdrop: 'rgba(0,0,0,0.5)',
+                                }).then(() => {
+                                    loadMembers(); // Load data baru setelah dihapus
+                                });
                             }
-
                         }
-                    })
+                    });
                 }
-
-            })
+            });
 
             $('.modal-tambah').click(function() {
                 $('#modal-form').modal('show');
@@ -191,72 +199,67 @@
                 $('input[name="phone"]').val('');
                 $('input[name="email"]').val('');
                 $('input[name="exp"]').val('');
+            });
 
-                $('.form-member').submit(function(e) {
-                    e.preventDefault();
-                    const token = localStorage.getItem('token');
-                    const frmdata = new FormData(this);
+            $('.form-member').submit(function(e) {
+                e.preventDefault();
+                const token = localStorage.getItem('token');
+                const frmdata = new FormData(this);
+                const id = $(this).find('input[name="id"]').val(); // Ambil ID jika ada
 
-                    $.ajax({
-                        url: 'api/members',
-                        type: 'POST',
-                        data: frmdata,
-                        cache: false,
-                        contentType: false,
-                        processData: false,
-                        headers: {
-                            "Authorization": "Bearer " + token
-                        },
-                        success: function(data) {
-                            if (data.success) {
-                                alert("Data berhasil Ditambah");
-                                location.reload();
-                            }
+                let url = 'api/members';
+                let method = 'POST';
+
+                if (id) {
+                    url = `api/members/${id}?_method=PUT`; // Jika ada ID, berarti ini adalah update
+                    method = 'POST';
+                }
+
+                $.ajax({
+                    url: url,
+                    type: method,
+                    data: frmdata,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    },
+                    success: function(data) {
+                        $('#modal-form').modal('hide'); // Tutup modal
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Sukses',
+                                text: (id ? 'Data berhasil diubah!' :
+                                    'Data berhasil ditambah!'),
+                                backdrop: 'rgba(0,0,0,0.5)',
+                            }).then(() => {
+                                loadMembers
+                            (); // Load data baru setelah ditambah atau diubah
+                            });
                         }
-                    });
+                    }
                 });
             });
 
-
             $(document).on('click', '.modal-ubah', function() {
-                $('#modal-form').modal('show')
                 const id = $(this).data('id');
+                $('#modal-form').modal('show');
 
                 $.get('api/members/' + id, function({
                     data
                 }) {
-                    $('select[name="type_member"]').val(data.type_member)
-                    $('input[name="name"]').val(data.name)
-                    $('input[name="phone"]').val(data.phone)
-                    $('input[name="email"]').val(data.email)
-                    $('input[name="exp"]').val(data.exp)
-                })
+                    $('select[name="type_member"]').val(data.type_member);
+                    $('input[name="name"]').val(data.name);
+                    $('input[name="phone"]').val(data.phone);
+                    $('input[name="email"]').val(data.email);
+                    $('input[name="exp"]').val(data.exp);
 
-                $('.form-member').submit(function(e) {
-                    e.preventDefault()
-                    const token = localStorage.getItem('token')
-
-                    const frmdata = new FormData(this);
-
-                    $.ajax({
-                        url: `api/members/${id}?_method=PUT`,
-                        type: 'POST',
-                        data: frmdata,
-                        cache: false,
-                        contentType: false,
-                        processData: false,
-                        headers: {
-                            "Authorization": "Bearer" + token
-                        },
-                        success: function(data) {
-                            if (data.success) {
-                                alert("Data berhasil Diubah");
-                                location.reload();
-                            }
-                        }
-                    })
-                })
-            })
+                    // Menambahkan ID ke form untuk keperluan edit
+                    $('.form-member').find('input[name="id"]').val(id);
+                });
+            });
         });
     </script>
 @endpush

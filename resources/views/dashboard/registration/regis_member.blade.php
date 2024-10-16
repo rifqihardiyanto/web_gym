@@ -1,121 +1,238 @@
 @extends('dashboard.layout.index')
 
-@section('title', 'Pesanan Baru')
+@section('title', 'Member')
 
 @section('container')
 
-    <!-- Content wrapper -->
-    <div class="content-wrapper">
-        <!-- Content -->
-        <div class="container-xxl flex-grow-1 container-p-y">
+    <!-- Bootstrap Table with Header - Dark -->
+    <div class="col-lg-4 col-md-6">
+        <div class="mt-3">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary mb-3 modal-tambah" data-bs-toggle="modal"
+                data-bs-target="#modal-form">
+                Registrasi @yield('title')
+            </button>
 
-            <!-- Basic Layout -->
-            <div class="row">
-                <div class="col-xl">
-                    <div class="card mb-4">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Input Member</h5>
-                            <small class="text-muted float-end">Merged input group</small>
+            <!-- Modal -->
+            <div class="modal modal-top fade" id="modal-form" tabindex="-1">
+                <div class="modal-dialog">
+                    <form class="form-regis-member modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title modal-tambah" id="modalTopTitle">Tambah @yield('title')</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="card-body">
+                        <div class="modal-body">
+                            <!-- ID Member -->
                             <div class="mb-3">
-                                <label class="form-label" for="member-id-input">ID Member</label>
-                                <div class="input-group input-group-merge">
-                                    <span class="input-group-text">
-                                        <i class="bx bx-user"></i>
-                                    </span>
-                                    <input type="text" id="member-id-input" class="form-control"
-                                        placeholder="Enter Member ID" aria-label="Member ID" />
+                                <label for="id_member" class="form-label">ID Member</label>
+                                <div class="input-group">
+                                    <input type="text" id="id_member" name="id_member" required class="form-control"
+                                        placeholder="Masukkan ID Member" />
+                                    <button type="button" class="btn btn-outline-secondary"
+                                        id="btn-cari-member">Cari</button>
                                 </div>
                             </div>
-                            <button id="search-btn" type="button" class="btn btn-primary">Search</button>
-
-                            <!-- Tabel hasil pencarian -->
-                            <div id="result-card" class="card mt-3" style="display:none;">
-                                <h5 class="card-header">Member Details</h5>
-                                <div class="table-responsive text-nowrap">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>Nama</th>
-                                                <th>ID Member</th>
-                                                <th>Type Member</th>
-                                                <th>Exp</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="table-body" class="table-border-bottom-0">
-                                            <!-- Data member akan dimasukkan di sini -->
-                                        </tbody>
-                                    </table>
-                                </div>
+                            <!-- Nama Member -->
+                            <div class="col mb-3">
+                                <label for="nama" class="form-label">Nama Member</label>
+                                <input type="text" id="nama" name="nama" required class="form-control"
+                                    placeholder="Nama Member" readonly />
                             </div>
-
-                            <!-- Hasil pencarian tidak ditemukan -->
-                            <div id="search-result" class="mt-3"></div>
+                            <!-- Tipe Member Selection -->
+                            <div class="mb-3">
+                                <label for="kategori" class="form-label">Tipe Member &#42;</label>
+                                <input type="text" id="kategori" name="kategori" required class="form-control"
+                                    placeholder="Kategori" readonly />
+                            </div>
+                            <!-- Harga -->
+                            <div class="col mb-3">
+                                <label for="harga" class="form-label">Harga</label>
+                                <input type="text" id="harga" name="harga" required class="form-control"
+                                    placeholder="Harga" readonly />
+                            </div>
+                            <!-- Notifikasi Expired -->
+                            <div class="alert alert-warning d-none" id="expired-notification">Member sudah expired!</div>
                         </div>
-                    </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-        <!-- / Content -->
     </div>
+
+    <div class="card">
+        <h5 class="card-header">Data Registrasi | @yield('title')</h5>
+        <div class="table-responsive text-nowrap">
+            <table class="table">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Nama</th>
+                        <th>ID Member</th>
+                        <th>Kategori</th>
+                        <th>Harga</th>
+                        <th>Tanggal</th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-10">
+                    <!-- Isi data member dari JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--/ Bootstrap Table with Header Dark -->
 
 @endsection
 
 @push('js')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#search-btn').on('click', function() {
-                var memberId = $('#member-id-input').val().trim(); // Trim whitespace
+            // Mengambil data member dari API
+            $.ajax({
+                url: '/api/member-reports',
+                method: 'GET', // Pastikan metode GET
+                success: function({
+                    data
+                }) {
+                    let row = '';
+                    data.map(function(val) {
+                        const createdDate = new Date(val.created_at);
+                        const options = {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                        };
+                        const formattedDate = createdDate.toLocaleDateString('id-ID', options);
+                        const expDate = new Date(val.exp);
+                        const expired = expDate < new Date() ? ' (Expired)' : '';
 
-                if (memberId) {
-                    $.ajax({
-                        url: '/search-member', // URL endpoint untuk pencarian member di server
-                        type: 'GET',
-                        data: {
-                            id: memberId // Mengirim nilai ID Member ke server
-                        },
-                        success: function(response) {
-                            // Kosongkan pesan error sebelumnya
-                            $('#search-result').empty();
-
-                            // Calculate remaining days until expiration
-                            const today = new Date();
-                            const expDate = new Date(response.exp);
-
-                            // Menghitung selisih hari
-                            const timeDiff = expDate.getTime() - today.getTime();
-                            const remainingDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-                            // Tampilkan card dan isi tabel dengan data member
-                            $('#result-card').show();
-                            $('#table-body').html(`
-                                <tr>
-                                    <td><strong>${response.name}</strong></td>
-                                    <td>${response.id_member}</td>
-                                    <td>${response.type_member}</td>
-                                    <td>${remainingDays} days remaining</td>
-                                </tr>
-                            `);
-                        },
-                        error: function() {
-                            // Sembunyikan tabel dan tampilkan pesan error
-                            $('#result-card').hide();
-                            $('#search-result').html(`
-                                <div class="alert alert-danger">
-                                    ID Member tidak ditemukan!
-                                </div>
-                            `);
-                        }
+                        row += `
+                            <tr> 
+                                <td>${val.nama}</td> 
+                                <td>${val.id_member}</td> 
+                                <td>${val.category.name}</td> 
+                                <td>${val.harga}</td> 
+                                <td>${formattedDate}${expired}</td> 
+                            </tr>`;
                     });
-                } else {
-                    $('#result-card').hide();
-                    $('#search-result').html(`
-                        <div class="alert alert-warning">
-                            Please enter a Member ID.
-                        </div>
-                    `);
+                    $('tbody').append(row);
                 }
+            });
+
+            // Mencari data member berdasarkan ID ketika tombol Cari diklik
+            $('#btn-cari-member').click(function() {
+                const idMember = $('#id_member').val();
+
+                $.ajax({
+                    url: `/api/member/search?id_member=${idMember}`,
+                    method: 'GET',
+                    success: function(response) {
+                        if (response) {
+                            $('#nama').val(response.name);
+                            $('#kategori').val(response.type_member);
+                            $('#harga').val(response.harga);
+
+                            // Cek tanggal exp
+                            const expDate = new Date(response.exp);
+                            const today = new Date();
+                            if (expDate < today) {
+                                $('#expired-notification').removeClass(
+                                'd-none'); // Tampilkan notifikasi expired
+                                // Tampilkan alert SweetAlert
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Member Expired',
+                                    text: 'Member sudah expired!',
+                                    backdrop: 'rgba(0,0,0,0.5)', // Atur backdrop jika ingin
+                                });
+                            } else {
+                                $('#expired-notification').addClass(
+                                'd-none'); // Sembunyikan notifikasi
+                            }
+
+                            // Tutup modal setelah pencarian
+                            $('#modal-form').modal('hide');
+                        }
+                    },
+                    error: function(jqXHR) {
+                        if (jqXHR.status === 404) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Kesalahan',
+                                text: 'Member tidak ditemukan. Pastikan ID benar.',
+                                backdrop: 'rgba(0,0,0,0.5)', // Atur backdrop jika ingin
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Kesalahan',
+                                text: 'Terjadi kesalahan saat menghubungi server. Silakan coba lagi nanti.',
+                                backdrop: 'rgba(0,0,0,0.5)', // Atur backdrop jika ingin
+                            });
+                        }
+                        $('#nama, #kategori, #harga').val(
+                        ''); // Reset input jika terjadi kesalahan
+                        $('#expired-notification').addClass('d-none'); // Sembunyikan notifikasi
+                    }
+                });
+            });
+
+            // Reset nilai field pada modal untuk penambahan member baru
+            $('.modal-tambah').click(function() {
+                $('#modal-form').modal('show');
+                $('#id_member, #nama, #kategori, #harga').val('');
+                $('#expired-notification').addClass('d-none'); // Sembunyikan notifikasi saat reset
+            });
+
+            // Proses Submit Form
+            // Proses Submit Form
+            $('.form-regis-member').submit(function(e) {
+                e.preventDefault();
+                const token = localStorage.getItem('token');
+                const frmdata = new FormData(this);
+
+                $.ajax({
+                    url: '/api/member-reports',
+                    type: 'POST',
+                    data: frmdata,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    },
+                    success: function(data) {
+                        if (data.success) {
+                            // Sembunyikan modal terlebih dahulu
+                            $('#modal-form').modal('hide');
+
+                            // Tampilkan SweetAlert
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Data berhasil ditambahkan',
+                                text: 'Member baru telah ditambahkan.',
+                                backdrop: 'rgba(0,0,0,0.5)', // Atur backdrop jika ingin
+                            }).then(() => {
+                                location
+                                    .reload(); // Reload halaman setelah alert ditutup
+                            });
+                        }
+                    },
+                    error: function(jqXHR) {
+                        console.log('Error:', jqXHR);
+                        const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message :
+                            'Terjadi kesalahan saat menyimpan data.';
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Kesalahan',
+                            text: errorMessage,
+                            backdrop: 'rgba(0,0,0,0.5)', // Atur backdrop jika ingin
+                        });
+                    }
+                });
             });
         });
     </script>
