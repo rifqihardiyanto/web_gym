@@ -103,30 +103,41 @@
                 const id = $(this).data('id');
                 const token = localStorage.getItem('token');
 
-                const confirm_dialog = confirm('Yakin ingin menghapus?');
-
-                if (confirm_dialog) {
-                    $.ajax({
-                        url: '/api/categories/' + id,
-                        type: "DELETE",
-                        headers: {
-                            "Authorization": "Bearer " + token
-                        },
-                        success: function(data) {
-                            if (data.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Sukses',
-                                    text: 'Data berhasil dihapus!',
-                                    backdrop: 'rgba(0,0,0,0.5)',
-                                }).then(() => {
-                                    location.reload(); // Reload page after deletion
-                                });
+                Swal.fire({
+                    title: 'Yakin ingin menghapus?',
+                    text: "Data yang dihapus tidak dapat dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal',
+                    backdrop: 'rgba(0,0,0,0.5)',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/api/categories/' + id,
+                            type: "DELETE",
+                            headers: {
+                                "Authorization": "Bearer " + token
+                            },
+                            success: function(data) {
+                                if (data.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Sukses',
+                                        text: 'Data berhasil dihapus!',
+                                    }).then(() => {
+                                        location
+                                    .reload(); // Reload page after deletion
+                                    });
+                                }
                             }
-                        }
-                    });
-                }
+                        });
+                    }
+                });
             });
+
 
             $('.modal-tambah').click(function() {
                 $('#modal-form').modal('show');
@@ -158,9 +169,9 @@
                                     backdrop: 'rgba(0,0,0,0.5)',
                                 }).then(() => {
                                     $('#modal-form').modal(
-                                    'hide'); // Tutup modal di sini
+                                        'hide'); // Tutup modal di sini
                                     location
-                                .reload(); // Reload page setelah menambah
+                                        .reload(); // Reload page setelah menambah
                                 });
                             }
                         }

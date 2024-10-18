@@ -27,7 +27,9 @@ class MemberController extends Controller
 
     public function index()
     {
-        $members = Member::with('category')->get();
+        $members = Member::with('category')
+        ->orderBy('created_at', 'desc')
+        ->get();
 
         return response()->json([
             'data' => $members

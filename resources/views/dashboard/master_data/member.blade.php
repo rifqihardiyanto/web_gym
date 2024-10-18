@@ -59,9 +59,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                                Close
-                            </button>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary">Save</button>
                         </div>
                     </form>
@@ -72,24 +70,28 @@
 
     <div class="card">
         <h5 class="card-header">Dashboard | @yield('title')</h5>
-        <div class="table-responsive text-nowrap">
-            <table class="table">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Tipe Member</th>
-                        <th>Nama Member</th>
-                        <th>Nomor Telepon</th>
-                        <th>ID Member</th>
-                        <th>Email</th>
-                        <th>Masa Berlaku</th>
-                        <th>Sisa Hari</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="table-border-bottom-10">
-                    <!-- Isi data member dari JavaScript -->
-                </tbody>
-            </table>
+        <div class="card-body">
+            <!-- Pencarian -->
+            <div class="mb-3">
+                <input type="text" id="searchInput" class="form-control" placeholder="Cari ID Member..." />
+            </div>
+            <div class="table-responsive text-nowrap">
+                <table class="table">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Tipe Member</th>
+                            <th>Nama Member</th>
+                            <th>Nomor Telepon</th>
+                            <th>ID Member</th>
+                            <th>Sisa Hari</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-10">
+                        <!-- Isi data member dari JavaScript -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     <!--/ Bootstrap Table with Header Dark -->
@@ -102,7 +104,7 @@
             // Function to load members into the table
             function loadMembers() {
                 $.ajax({
-                    url: '/api/members',
+                    url: '{{ url('/api/members') }}',
                     success: function({
                         data
                     }) {
@@ -119,13 +121,11 @@
                                     <td> ${val.name} </td> 
                                     <td> ${val.phone} </td> 
                                     <td> ${val.id_member} </td> 
-                                    <td> ${val.email} </td> 
-                                    <td> ${val.exp} </td>
                                     <td> ${remainingDays} hari </td>
                                     <td>
                                         <a data-toggle="modal" href="#modal-form" data-id="${val.id}" class="btn btn-warning modal-ubah">Edit </a>    
                                         <a href="#" data-id="${val.id}" class="btn btn-danger btn-hapus">Hapus </a>    
-                                        <a href="#" data-id="${val.id}" class="btn btn-info btn-wa">Kirim WhatsApp </a>    
+                                        <a href="#" data-id="${val.id}" class="btn btn-info btn-wa">WA </a>    
                                     </td>
                                 </tr>`;
                         });
@@ -136,6 +136,14 @@
             }
 
             loadMembers(); // Load members initially
+            // Pencarian
+            $('#searchInput').on('keyup', function() {
+                const searchValue = $(this).val().toLowerCase();
+                $('tbody tr').filter(function() {
+                    $(this).toggle($(this).find('td:eq(3)').text().toLowerCase().indexOf(
+                        searchValue) > -1) // Filter berdasarkan ID Member
+                });
+            });
 
             $(document).on('click', '.btn-wa', function() {
                 const id = $(this).data('id');
@@ -153,41 +161,62 @@
 
                     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
 
-                    const confirmSend = confirm('Yakin ingin mengirim pesan WhatsApp?');
-
-                    if (confirmSend) {
-                        window.location.href = whatsappUrl;
-                    }
+                    Swal.fire({
+                        title: 'Yakin ingin mengirim pesan WhatsApp?',
+                        text: `Pesan akan dikirim ke ${name}.`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ya, kirim!',
+                        cancelButtonText: 'Batal',
+                        backdrop: 'rgba(0,0,0,0.5)',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.open(whatsappUrl, '_blank');
+                        }
+                    });
                 });
             });
+
 
             $(document).on('click', '.btn-hapus', function() {
                 const id = $(this).data('id');
                 const token = localStorage.getItem('token');
 
-                const confirm_dialog = confirm('Yakin ingin menghapus?');
-
-                if (confirm_dialog) {
-                    $.ajax({
-                        url: '/api/members/' + id,
-                        type: "DELETE",
-                        headers: {
-                            "Authorization": "Bearer " + token
-                        },
-                        success: function(data) {
-                            if (data.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Sukses',
-                                    text: 'Data berhasil dihapus!',
-                                    backdrop: 'rgba(0,0,0,0.5)',
-                                }).then(() => {
-                                    loadMembers(); // Load data baru setelah dihapus
-                                });
+                Swal.fire({
+                    title: 'Yakin ingin menghapus?',
+                    text: "Data yang dihapus tidak dapat dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal',
+                    backdrop: 'rgba(0,0,0,0.5)',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/api/members/' + id,
+                            type: "DELETE",
+                            headers: {
+                                "Authorization": "Bearer " + token
+                            },
+                            success: function(data) {
+                                if (data.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Sukses',
+                                        text: 'Data berhasil dihapus!',
+                                    }).then(() => {
+                                        loadMembers
+                                            (); // Load data member setelah penghapusan
+                                    });
+                                }
                             }
-                        }
-                    });
-                }
+                        });
+                    }
+                });
             });
 
             $('.modal-tambah').click(function() {
@@ -236,7 +265,7 @@
                                 backdrop: 'rgba(0,0,0,0.5)',
                             }).then(() => {
                                 loadMembers
-                            (); // Load data baru setelah ditambah atau diubah
+                                    (); // Load data baru setelah ditambah atau diubah
                             });
                         }
                     }
@@ -255,9 +284,56 @@
                     $('input[name="phone"]').val(data.phone);
                     $('input[name="email"]').val(data.email);
                     $('input[name="exp"]').val(data.exp);
+                });
+            });
 
-                    // Menambahkan ID ke form untuk keperluan edit
-                    $('.form-member').find('input[name="id"]').val(id);
+            $(document).on('click', '.modal-ubah', function() {
+                $('#modal-form').modal('show');
+                const id = $(this).data('id');
+
+                $.get('api/members/' + id, function({
+                    data
+                }) {
+                    $('select[name="type_member"]').val(data.type_member);
+                    $('input[name="name"]').val(data.name);
+                    $('input[name="phone"]').val(data.phone);
+                    $('input[name="email"]').val(data.email);
+                    $('input[name="exp"]').val(data.exp);
+                });
+
+                $('.form-member').off('submit').on('submit', function(e) {
+                    e.preventDefault();
+                    const token = localStorage.getItem('token');
+
+                    const frmdata = new FormData(this);
+
+                    $.ajax({
+                        url: `api/members/${id}?_method=PUT`,
+                        type: 'POST',
+                        data: frmdata,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        headers: {
+                            "Authorization": "Bearer " + token
+                        },
+                        success: function(data) {
+                            $('#modal-form').modal('hide');
+                            if (data.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Sukses',
+                                    text: 'Data berhasil diubah!',
+                                    backdrop: 'rgba(0,0,0,0.5)',
+                                }).then(() => {
+                                    $('#modal-form').modal(
+                                        'hide'); // Close the modal
+                                    location
+                                        .reload(); // Reload page after updating
+                                });
+                            }
+                        }
+                    });
                 });
             });
         });
