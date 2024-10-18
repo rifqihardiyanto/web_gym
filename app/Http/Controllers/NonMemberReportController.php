@@ -19,8 +19,17 @@ class NonMemberReportController extends Controller
         $this->middleware('auth:api')->only(['store', 'update', 'destroy']);
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        $query = NonMemberReport::query();
+
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $query->whereBetween('created_at', [
+                $request->start_date,
+                $request->end_date,
+            ]);
+        }
+
         $nonMemberReport = NonMemberReport::with('category')->get();
 
         return response()->json([
