@@ -7,6 +7,7 @@ use App\Models\Member;
 use App\Models\MemberReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class MemberReportController extends Controller
 {
@@ -20,10 +21,30 @@ class MemberReportController extends Controller
         $this->middleware('auth:api')->only(['store', 'update', 'destroy']);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $MemberReport = MemberReport::with('category')->get();
+        // Ambil input dari request untuk rentang waktu
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
 
+        // Cek jika start_date dan endDate tidak ada, gunakan tanggal hari ini
+        if (!$startDate && !$endDate) {
+            $today = Carbon::today();
+            $MemberReport = MemberReport::with('category')
+                ->whereDate('created_at', $today)
+                ->get();
+        } else {
+            // Jika ada start_date dan endDate, atur rentang waktu secara penuh (awal hari sampai akhir hari)
+            $startDate = Carbon::parse($startDate)->startOfDay();
+            $endDate = Carbon::parse($endDate)->endOfDay();
+
+            // Query berdasarkan rentang waktu yang sudah diatur
+            $MemberReport = MemberReport::with('category')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->get();
+        }
+
+        // Kembalikan data dalam format JSON
         return response()->json([
             'data' => $MemberReport
         ]);

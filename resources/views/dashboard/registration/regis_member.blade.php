@@ -155,19 +155,19 @@
                 const startDate = $('#start-date').val();
                 const endDate = $('#end-date').val();
 
-                if (startDate && endDate) {
-                    const filteredData = allData.filter(val => {
-                        const createdDate = new Date(val.created_at);
-                        // Set end date to the end of the day
-                        const endOfDay = new Date(endDate);
-                        endOfDay.setHours(23, 59, 59, 999); // Mengatur waktu ke akhir hari
-
-                        return createdDate >= new Date(startDate) && createdDate <= endOfDay;
-                    });
-                    displayData(filteredData);
-                } else {
-                    displayData(allData);
-                }
+                // Panggil API dan kirim tanggal yang dipilih
+                $.ajax({
+                    url: '/api/member-reports',
+                    method: 'GET',
+                    data: {
+                        start_date: startDate,
+                        end_date: endDate
+                    },
+                    success: function(response) {
+                        displayData(response
+                        .data); // Tampilkan data yang dikembalikan oleh backend
+                    }
+                });
             });
 
             // Fungsi untuk mengekspor data ke Excel
