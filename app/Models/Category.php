@@ -15,4 +15,14 @@ class Category extends Model
     {
         return $this->hasMany(Member::class);
     }
+    
+    public function nonMemberReport()
+    {
+        return $this->hasMany(nonMemberReport::class);
+    }
+
+    public function MemberReport()
+    {
+        return $this->hasMany(MemberReport::class);
+    }
 }

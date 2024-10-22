@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en" class="light-style customizer-hide" dir="ltr" data-theme="theme-default"
     data-assets-path="../assets/" data-template="vertical-menu-template-free">
 
@@ -35,36 +34,33 @@
     <link rel="stylesheet" href="{{ asset('vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
 
     <!-- Page CSS -->
-    <!-- Page -->
     <link rel="stylesheet" href="{{ asset('vendor/css/pages/page-auth.css') }}" />
+
+    <!-- SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
     <!-- Helpers -->
     <script src="{{ asset('vendor/js/helpers.js') }}"></script>
 
-    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
-    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ asset('js/config.js') }}"></script>
 </head>
 
 <body>
-    <!-- Content -->
-
     <div class="container-xxl">
         <div class="authentication-wrapper authentication-basic container-p-y">
             <div class="authentication-inner">
-                <!-- Register -->
                 <div class="card">
                     <div class="card-body">
-                        <!-- Logo -->
                         <div class="app-brand justify-content-center">
                             <a href="index.html" class="app-brand-link gap-2">
                                 <span class="app-brand-text demo text-body fw-bolder">Nashir</span>
                             </a>
                         </div>
-                        <!-- /Logo -->
                         <h4 class="mb-2">Welcome to Nashir! 👋</h4>
                         <p class="mb-4">Please sign-in to your account and start the adventure</p>
 
-                        <form id="formAuthentication" class="mb-3 form-login" action="{{ url('login') }}" method="post">
+                        <form id="formAuthentication" class="mb-3 form-login" action="{{ url('login') }}"
+                            method="post">
                             @csrf
                             @error('email')
                                 <div class="alert alert-danger alert-dismissible" role="alert">
@@ -119,53 +115,29 @@
                         </p>
                     </div>
                 </div>
-                <!-- /Register -->
             </div>
         </div>
     </div>
 
-    <!-- / Content -->
-
     <!-- Core JS -->
-    <!-- build:js assets/vendor/js/core.js -->
     <script src="{{ asset('vendor/libs/jquery/jquery.js') }}"></script>
     <script src="{{ asset('vendor/libs/popper/popper.js') }}"></script>
     <script src="{{ asset('vendor/js/bootstrap.js') }}"></script>
     <script src="{{ asset('vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
-
     <script src="{{ asset('vendor/js/menu.js') }}"></script>
-    <!-- endbuild -->
-
-    <!-- Vendors JS -->
-
-    <!-- Main JS -->
     <script src="{{ asset('js/main.js') }}"></script>
 
-    <!-- Page JS -->
-
-    <!-- Place this tag in your head or just before your close body tag. -->
-    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <!-- SweetAlert JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
     <script>
         $(function() {
-
-            function setCookie(name, value, days) {
-                var expires = "";
-                if (days) {
-                    var date = new Date();
-                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                    expires = "; expires=" + date.toUTCString();
-                }
-                document.cookie = name + "=" + (value || "") + expires + "; path=/";
-            }
-
             $('.form-login').submit(function(e) {
                 e.preventDefault();
 
                 const email = $('.email').val();
                 const password = $('.password').val();
                 const csrf_token = $('meta[name="csrf-token"]').attr('content');
-
 
                 $.ajax({
                     url: '/login',
@@ -175,20 +147,40 @@
                         password: password,
                         _token: csrf_token
                     },
-                    
                     success: function(data) {
                         if (!data.success) {
-                            alert(data.message)
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Login Failed',
+                                text: data.message,
+                                confirmButtonText: 'OK'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Login Berhasil',
+                                text: 'Selamat datang di dashboard!',
+                                confirmButtonText: 'OK'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    localStorage.setItem('token', data.token);
+                                    window.location.href = '/dashboard';
+                                }
+                            });
                         }
-
-                        localStorage.setItem('token', data.token)
-                        window.location.href = '/dashboard';
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Terjadi kesalahan, silakan coba lagi.',
+                            confirmButtonText: 'OK'
+                        });
                     }
-                })
-            })
-        })
+                });
+            });
+        });
     </script>
-
 
 </body>
 

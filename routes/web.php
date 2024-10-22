@@ -12,6 +12,8 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\MemberReportController;
+use App\Http\Controllers\NonMemberReportController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\TestimoniController;
 use App\Http\Controllers\SubcategoryController;
@@ -48,10 +50,15 @@ Route::get('dashboard', [DashboardController::class, 'index']);
 Route::get('slider', [SliderController::class, 'list']);
 Route::get('kategori', [CategoryController::class, 'list']);
 Route::get('member', [MemberController::class, 'list']);
+Route::get('non-member-reports', [NonMemberReportController::class, 'list']);
+Route::get('member-reports', [MemberReportController::class, 'list']);
 
-// pesanan
+// regis member
 Route::get('regis/member', [RegistrationController::class, 'indexMember']);
 Route::get('/search-member', [RegistrationController::class, 'searchMember']);
+
+
+Route::get('regis/member', [RegistrationController::class, 'indexMember']);
 
 Route::get('regis/non_member', [RegistrationController::class, 'index']);
 

@@ -4,12 +4,16 @@
 
 @section('container')
 
+    <!-- SweetAlert CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
     <!-- Bootstrap Table with Header - Dark -->
-    <!-- Slide from Top Modal -->
     <div class="col-lg-4 col-md-6">
         <div class="mt-3">
             <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary mb-3 modal-tambah" data-bs-toggle="modal" data-bs-target="#modal-form">
+            <button type="button" class="btn btn-primary mb-3 modal-tambah" data-bs-toggle="modal"
+                data-bs-target="#modal-form">
                 Tambah @yield('title')
             </button>
 
@@ -25,15 +29,15 @@
                             <div class="row">
                                 <div class="col mb-3">
                                     <label for="nameSlideTop" class="form-label">Nama @yield('title')</label>
-                                    <input type="text" class="form-control"
-                                        placeholder="Enter Kategori" name="name"/>
+                                    <input type="text" class="form-control" placeholder="Enter Kategori"
+                                        name="name" />
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col mb-3">
                                     <label for="nameSlideTop" class="form-label">Biaya @yield('title')</label>
-                                    <input type="text" class="form-control"
-                                        placeholder="Enter Kategori" name="biaya"/>
+                                    <input type="text" class="form-control" placeholder="Enter Kategori"
+                                        name="biaya" />
                                 </div>
                             </div>
                         </div>
@@ -61,13 +65,12 @@
                     </tr>
                 </thead>
                 <tbody class="table-border-bottom-10">
-                    
+
                 </tbody>
             </table>
         </div>
     </div>
     <!--/ Bootstrap Table with Header Dark -->
-
 
 @endsection
 
@@ -79,16 +82,15 @@
                 success: function({
                     data
                 }) {
-
-                    let row;
-                    data.map(function(val, index) {
+                    let row = '';
+                    data.map(function(val) {
                         row += `
                         <tr> 
                             <td> ${val.name} </td> 
                             <td> ${val.biaya} </td> 
                             <td>
-                                <a  data-toogle="modal" href="#modal-form" data-id="${val.id}" class="btn btn-warning modal-ubah">Edit </a>    
-                                <a  href="#" data-id="${val.id}" class="btn btn-danger btn-hapus">Hapus </a>    
+                                <a data-toggle="modal" href="#modal-form" data-id="${val.id}" class="btn btn-warning modal-ubah">Edit</a>    
+                                <a href="#" data-id="${val.id}" class="btn btn-danger btn-hapus">Hapus</a>    
                             </td>
                         </tr>`;
                     });
@@ -101,35 +103,50 @@
                 const id = $(this).data('id');
                 const token = localStorage.getItem('token');
 
-                confirm_dialog = confirm('Yakin ingin menghapus?');
-
-                if (confirm_dialog) {
-                    $.ajax({
-                        url: '/api/categories/' + id,
-                        type: "DELETE",
-                        headers: {
-                            "Authorization": "Bearer" + token
-                        },
-                        success: function(data) {
-                            if (data.success) {
-                                alert("Data berhasil di hapus");
-                                location.reload();
+                Swal.fire({
+                    title: 'Yakin ingin menghapus?',
+                    text: "Data yang dihapus tidak dapat dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal',
+                    backdrop: 'rgba(0,0,0,0.5)',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/api/categories/' + id,
+                            type: "DELETE",
+                            headers: {
+                                "Authorization": "Bearer " + token
+                            },
+                            success: function(data) {
+                                if (data.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Sukses',
+                                        text: 'Data berhasil dihapus!',
+                                    }).then(() => {
+                                        location
+                                    .reload(); // Reload page after deletion
+                                    });
+                                }
                             }
+                        });
+                    }
+                });
+            });
 
-                        }
-                    })
-                }
-
-            })
 
             $('.modal-tambah').click(function() {
-                $('#modal-form').modal('show')
-                $('input[name="name"]').val('')
-                $('input[name="biaya"]').val('')
+                $('#modal-form').modal('show');
+                $('input[name="name"]').val('');
+                $('input[name="biaya"]').val('');
 
-                $('.form-kategori').submit(function(e) {
-                    e.preventDefault()
-                    const token = localStorage.getItem('token')
+                $('.form-kategori').off('submit').on('submit', function(e) {
+                    e.preventDefault();
+                    const token = localStorage.getItem('token');
 
                     const frmdata = new FormData(this);
 
@@ -141,20 +158,29 @@
                         contentType: false,
                         processData: false,
                         headers: {
-                            "Authorization": "Bearer" + token
+                            "Authorization": "Bearer " + token
                         },
                         success: function(data) {
                             if (data.success) {
-                                alert("Data berhasil Ditambah");
-                                location.reload();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Sukses',
+                                    text: 'Data berhasil ditambah!',
+                                    backdrop: 'rgba(0,0,0,0.5)',
+                                }).then(() => {
+                                    $('#modal-form').modal(
+                                        'hide'); // Tutup modal di sini
+                                    location
+                                        .reload(); // Reload page setelah menambah
+                                });
                             }
                         }
-                    })
-                })
+                    });
+                });
             });
 
             $(document).on('click', '.modal-ubah', function() {
-                $('#modal-form').modal('show')
+                $('#modal-form').modal('show');
                 const id = $(this).data('id');
 
                 $.get('api/categories/' + id, function({
@@ -162,11 +188,11 @@
                 }) {
                     $('input[name="name"]').val(data.name);
                     $('input[name="biaya"]').val(data.biaya);
-                })
+                });
 
-                $('.form-kategori').submit(function(e) {
-                    e.preventDefault()
-                    const token = localStorage.getItem('token')
+                $('.form-kategori').off('submit').on('submit', function(e) {
+                    e.preventDefault();
+                    const token = localStorage.getItem('token');
 
                     const frmdata = new FormData(this);
 
@@ -178,18 +204,26 @@
                         contentType: false,
                         processData: false,
                         headers: {
-                            "Authorization": "Bearer" + token
+                            "Authorization": "Bearer " + token
                         },
                         success: function(data) {
                             if (data.success) {
-                                alert("Data berhasil Diubah");
-                                location.reload();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Sukses',
+                                    text: 'Data berhasil diubah!',
+                                    backdrop: 'rgba(0,0,0,0.5)',
+                                }).then(() => {
+                                    $('#modal-form').modal(
+                                        'hide'); // Close the modal
+                                    location
+                                        .reload(); // Reload page after updating
+                                });
                             }
                         }
-                    })
-                })
-
-            })
+                    });
+                });
+            });
         });
     </script>
 @endpush

@@ -99,12 +99,12 @@
                     </a>
                     <ul class="menu-sub">
                         <li class="menu-item">
-                            <a href="{{ url('regis/member') }}" class="menu-link">
+                            <a href="{{ url('member-reports') }}" class="menu-link">
                                 <div data-i18n="member">Member</div>
                             </a>
                         </li>
                         <li class="menu-item">
-                            <a href="{{ url('regis/non_member') }}" class="menu-link">
+                            <a href="{{ url('non-member-reports') }}" class="menu-link">
                                 <div data-i18n="nonMember">Non Member</div>
                             </a>
                         </li>
