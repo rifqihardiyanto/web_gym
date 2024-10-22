@@ -8,7 +8,7 @@
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Login Basic - Pages | Sneat - Bootstrap 5 HTML Admin Template - Pro</title>
+    <title>Prasasti Gym</title>
 
     <meta name="description" content="" />
 
@@ -53,10 +53,10 @@
                     <div class="card-body">
                         <div class="app-brand justify-content-center">
                             <a href="index.html" class="app-brand-link gap-2">
-                                <span class="app-brand-text demo text-body fw-bolder">Nashir</span>
+                                <span class="app-brand-text demo text-body fw-bolder">Prasasti Gym</span>
                             </a>
                         </div>
-                        <h4 class="mb-2">Welcome to Nashir! 👋</h4>
+                        <h4 class="mb-2">Welcome to Prasasti Gym! 👋</h4>
                         <p class="mb-4">Please sign-in to your account and start the adventure</p>
 
                         <form id="formAuthentication" class="mb-3 form-login" action="{{ url('login') }}"

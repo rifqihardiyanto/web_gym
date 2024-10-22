@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\NonMemberReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class NonMemberReportController extends Controller
 {
@@ -21,17 +22,33 @@ class NonMemberReportController extends Controller
 
     public function index(Request $request)
     {
-        $query = NonMemberReport::query();
+        // Ambil input dari request untuk rentang waktu
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
 
-        if ($request->has('start_date') && $request->has('end_date')) {
-            $query->whereBetween('created_at', [
-                $request->start_date,
-                $request->end_date,
-            ]);
+        // Inisialisasi query dasar
+        $query = NonMemberReport::with('category');
+
+        // Jika tidak ada rentang waktu, ambil data hari ini
+        if (!$startDate && !$endDate) {
+            // Set tanggal hari ini
+            $today = Carbon::today();
+
+            // Tambahkan kondisi untuk mengambil data hari ini
+            $query->whereDate('created_at', $today);
+        } else {
+            // Jika ada start_date dan endDate, atur rentang waktu secara penuh (awal hari sampai akhir hari)
+            $startDate = Carbon::parse($startDate)->startOfDay();
+            $endDate = Carbon::parse($endDate)->endOfDay();
+
+            // Query berdasarkan rentang waktu yang sudah diatur
+            $query->whereBetween('created_at', [$startDate, $endDate]);
         }
 
-        $nonMemberReport = NonMemberReport::with('category')->get();
+        // Ambil hasil query
+        $nonMemberReport = $query->get();
 
+        // Kembalikan data dalam format JSON
         return response()->json([
             'data' => $nonMemberReport
         ]);

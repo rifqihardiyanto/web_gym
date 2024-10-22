@@ -31,7 +31,7 @@ use App\Http\Controllers\TentangController;
 */
 
 Route::get('/', function () {
-    return redirect()->route('public');
+    return redirect()->route('login');
 });
 
 // auth
@@ -61,33 +61,5 @@ Route::get('/search-member', [RegistrationController::class, 'searchMember']);
 Route::get('regis/member', [RegistrationController::class, 'indexMember']);
 
 Route::get('regis/non_member', [RegistrationController::class, 'index']);
-
-Route::get('tentang', [TentangController::class, 'index']);
-Route::post('tentang/{about}', [TentangController::class, 'update']);
-
-// Laporan
-Route::get('report', [ReportController::class, 'index']);
-Route::get('payment', [PaymentController::class, 'list']);
-
-
-// public
-Route::get('home', [HomeController::class, 'index'])->name('public');
-Route::get('home2', [HomeController::class, 'index2'])->name('public2');
-Route::get('shop', [HomeController::class, 'shop']);
-Route::get('about', [HomeController::class, 'about']);
-Route::get('produks/{category}', [HomeController::class, 'produks']);
-Route::get('produk/{id}', [HomeController::class, 'produk']);
-Route::get('cart', [HomeController::class, 'cart']);
-Route::get('checkout', [HomeController::class, 'checkout']);
-Route::get('orders', [HomeController::class, 'orders']);
-Route::get('contact', [HomeController::class, 'kontak']);
-Route::get('faq', [HomeController::class, 'faq']);
-Route::get('catalog', [HomeController::class, 'catalog']);
-
-Route::post('addtocart', [HomeController::class, 'add_to_cart']);
-Route::get('deletecart/{cart}', [HomeController::class, 'delete_from_cart']);
-
-Route::get('get_kota/{id}', [HomeController::class, 'get_kota']);
-Route::get('get_ongkir/{destination}', [HomeController::class, 'get_ongkir']);
 
 
