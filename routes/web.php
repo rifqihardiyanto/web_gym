@@ -53,6 +53,8 @@ Route::get('member', [MemberController::class, 'list']);
 Route::get('non-member-reports', [NonMemberReportController::class, 'list']);
 Route::get('member-reports', [MemberReportController::class, 'list']);
 
+Route::get('daftar-member', [MemberReportController::class, 'daftarMember']);
+
 // regis member
 Route::get('regis/member', [RegistrationController::class, 'indexMember']);
 Route::get('/search-member', [RegistrationController::class, 'searchMember']);

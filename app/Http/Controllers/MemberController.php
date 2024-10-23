@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Mail\MemberCreated;
 use App\Models\Category;
+use App\Models\DaftarMember;
 use App\Models\Member;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -28,8 +29,8 @@ class MemberController extends Controller
     public function index()
     {
         $members = Member::with('category')
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return response()->json([
             'data' => $members
@@ -59,6 +60,7 @@ class MemberController extends Controller
             'type_member' => 'required|string|max:50',
             'name' => 'required|string|max:255',
             'phone' => 'required|string|unique:members,phone|max:20',
+            'price' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
             'exp' => 'required|date'
         ]);
@@ -71,11 +73,19 @@ class MemberController extends Controller
         $input = $request->all();
         $member = Member::create($input);
 
+        $daftarMember = DaftarMember::create([
+            'name' => $member->name,
+            'id_member' => $member->id_member,
+            'price' => $member->price,
+            'type_member' => $member->type_member,
+        ]);
+
         // Redirect ke WhatsApp
         return response()->json([
             'success' => true,
             'message' => 'Berhasil di Tambah',
-            'data' => $member
+            'data' => $member,
+            'daftar_member' => $daftarMember
         ]);
     }
 
@@ -114,14 +124,23 @@ class MemberController extends Controller
         }
 
         $input = $request->all();
-
         $member->update($input);
+
+        $daftarMember = DaftarMember::create([
+            'name' => $member->name,
+            'id_member' => $member->id_member, 
+            'type_member' => $member->type_member,
+        ]);
+
+        // Mengembalikan respons
         return response()->json([
             'success' => true,
-            'message' => 'Berhasil DiUpdate',
-            'data' => $member
+            'message' => 'Berhasil DiUpdate dan Data Baru Ditambahkan ke Daftar Member',
+            'data' => $member,
+            'daftar_member' => $daftarMember
         ]);
     }
+
 
     /**
      * Remove the specified resource from storage.

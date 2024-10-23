@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\DaftarMember;
 use App\Models\Member;
 use App\Models\MemberReport;
 use Illuminate\Http\Request;
@@ -144,5 +145,11 @@ class MemberReportController extends Controller
     public function destroy(MemberReport $memberReport)
     {
         //
+    }
+
+    public function daftarMember()
+    {
+        $daftarMember = DaftarMember::all();
+        return view('dashboard.registration.daftar_member', compact('daftarMember'));
     }
 }
