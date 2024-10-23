@@ -108,6 +108,11 @@
                                 <div data-i18n="nonMember">Non Member</div>
                             </a>
                         </li>
+                        <li class="menu-item">
+                            <a href="{{ url('daftar-member') }}" class="menu-link">
+                                <div data-i18n="daftarMember">Pendaftar Member</div>
+                            </a>
+                        </li>
                     </ul>
                 </li>
             </ul>

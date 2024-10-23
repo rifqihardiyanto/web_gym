@@ -15,6 +15,11 @@ class Category extends Model
     {
         return $this->hasMany(Member::class);
     }
+
+    public function Daftarmember()
+    {
+        return $this->hasMany(DaftarMember::class);
+    }
     
     public function nonMemberReport()
     {

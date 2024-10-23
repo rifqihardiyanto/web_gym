@@ -53,6 +53,8 @@ Route::get('member', [MemberController::class, 'list']);
 Route::get('non-member-reports', [NonMemberReportController::class, 'list']);
 Route::get('member-reports', [MemberReportController::class, 'list']);
 
+Route::get('daftar-member', [MemberReportController::class, 'daftarMember']);
+
 // regis member
 Route::get('regis/member', [RegistrationController::class, 'indexMember']);
 Route::get('/search-member', [RegistrationController::class, 'searchMember']);
@@ -61,5 +63,9 @@ Route::get('/search-member', [RegistrationController::class, 'searchMember']);
 Route::get('regis/member', [RegistrationController::class, 'indexMember']);
 
 Route::get('regis/non_member', [RegistrationController::class, 'index']);
+
+Route::get('export-daftar-member', [MemberReportController::class, 'exportDaftarMember'])->name('export.daftar-member');
+Route::get('export-regis-member', [MemberReportController::class, 'exportRegisMember'])->name('export.regis-member');
+Route::get('export-regis-nonmember', [MemberReportController::class, 'exportRegisNonMember'])->name('export.regis-nonmember');
 
 

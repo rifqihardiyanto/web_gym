@@ -16,20 +16,20 @@
             <div class="row mb-3">
                 <div class="col-lg-5">
                     <label for="start-date" class="form-label">Tanggal Mulai</label>
-                    <input type="date" id="start-date" class="form-control">
+                    <input type="date" id="start_date" class="form-control">
                 </div>
                 <div class="col-lg-5">
                     <label for="end-date" class="form-label">Tanggal Akhir</label>
-                    <input type="date" id="end-date" class="form-control">
+                    <input type="date" id="end_date" class="form-control">
                 </div>
                 <div class="col-lg-2 d-flex align-items-end">
                     <button id="btn-search" class="btn btn-primary">Cari</button>
                 </div>
             </div>
 
-            <div class="mb-3">
-                <button id="export-excel" class="btn btn-success">Export to Excel</button>
-                <button id="export-pdf" class="btn btn-danger">Export to PDF</button>
+            <div class="d-flex mb-3">
+                <!-- Tombol untuk ekspor data -->
+                <button type="button" class="btn btn-success" id="export-btn">Ekspor</button>
             </div>
 
             <!-- Modal -->
@@ -152,8 +152,8 @@
 
             // Fungsi untuk mencari data berdasarkan rentang tanggal
             $('#btn-search').click(function() {
-                const startDate = $('#start-date').val();
-                const endDate = $('#end-date').val();
+                const startDate = $('#start_date').val();
+                const endDate = $('#end_date').val();
 
                 // Panggil API dan kirim tanggal yang dipilih
                 $.ajax({
@@ -165,96 +165,26 @@
                     },
                     success: function(response) {
                         displayData(response
-                        .data); // Tampilkan data yang dikembalikan oleh backend
+                            .data); // Tampilkan data yang dikembalikan oleh backend
                     }
                 });
             });
 
-            // Fungsi untuk mengekspor data ke Excel
-            $('#export-excel').click(function() {
-                const startDate = $('#start-date').val();
-                const endDate = $('#end-date').val();
+            $(document).ready(function() {
+                $('#export-btn').click(function() {
+                    // Ambil nilai dari input tanggal
+                    var startDate = $('#start_date').val();
+                    var endDate = $('#end_date').val();
 
-                let filteredData = allData;
+                    // Validasi apakah tanggal diisi
+                    if (!startDate || !endDate) {
+                        alert('Harap pilih rentang tanggal terlebih dahulu.');
+                        return;
+                    }
 
-                // Jika rentang tanggal sudah diisi, filter data
-                if (startDate && endDate) {
-                    filteredData = allData.filter(val => {
-                        const createdDate = new Date(val.created_at);
-                        const endOfDay = new Date(endDate);
-                        endOfDay.setHours(23, 59, 59, 999);
-
-                        return createdDate >= new Date(startDate) && createdDate <= endOfDay;
-                    });
-                }
-
-                const ws = XLSX.utils.json_to_sheet(filteredData.map(val => ({
-                    Nama: val.nama,
-                    IDMember: val.id_member,
-                    Kategori: val.category.name,
-                    Harga: val.harga,
-                    Tanggal: new Date(val.created_at).toLocaleDateString('id-ID')
-                })));
-
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Data Non Member");
-
-                // Simpan file
-                XLSX.writeFile(wb, 'data_non_member.xlsx');
-            });
-
-            // Fungsi untuk mengekspor data ke PDF
-            $('#export-pdf').click(function() {
-                const {
-                    jsPDF
-                } = window.jspdf;
-                const doc = new jsPDF();
-
-                const startDate = $('#start-date').val();
-                const endDate = $('#end-date').val();
-
-                let filteredData = allData;
-
-                // Jika rentang tanggal sudah diisi, filter data
-                if (startDate && endDate) {
-                    filteredData = allData.filter(val => {
-                        const createdDate = new Date(val.created_at);
-                        const endOfDay = new Date(endDate);
-                        endOfDay.setHours(23, 59, 59, 999);
-
-                        return createdDate >= new Date(startDate) && createdDate <= endOfDay;
-                    });
-                }
-
-                // Header
-                doc.setFontSize(12);
-                doc.text("Data Non Member", 14, 10);
-
-                const startY = 20; // Y position for the first row
-                const rowHeight = 10; // Height of each row
-                const columns = ['Nama', 'ID Member', 'Kategori', 'Harga', 'Tanggal'];
-
-                // Header table
-                columns.forEach((header, index) => {
-                    doc.text(header, 14 + index * 40, startY); // Adjust spacing based on index
+                    window.location.href = "{{ url('export-regis-member') }}?start_date=" +
+                        startDate + "&end_date=" + endDate;
                 });
-
-                // Data rows
-                filteredData.forEach((val, index) => {
-                    const createdDate = new Date(val.created_at).toLocaleDateString('id-ID');
-                    const dataRow = [val.nama, val.id_member, val.category.name, val.harga,
-                        createdDate
-                    ];
-
-                    dataRow.forEach((data, colIndex) => {
-                        // Pastikan posisi Y yang sesuai untuk setiap baris
-                        const yPos = startY + (index + 1) * rowHeight;
-                        doc.text(data.toString(), 14 + colIndex * 40, yPos);
-                    });
-                });
-
-                // Simpan file
-                doc.save('data_non_member.pdf');
             });
 
 

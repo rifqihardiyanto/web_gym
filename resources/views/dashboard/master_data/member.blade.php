@@ -28,10 +28,11 @@
                         <div class="modal-body">
                             <!-- Type Member Selection -->
                             <div class="mb-3">
-                                <label for="exampleFormControlSelect1" class="form-label">Tipe Member &#42;</label>
+                                <label for="type_member" class="form-label">Tipe Member &#42;</label>
                                 <select class="form-select" id="type_member" name="type_member" required>
                                     @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        <option value="{{ $category->id }}" data-harga="{{ $category->biaya }}">
+                                            {{ $category->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -47,6 +48,13 @@
                                 <input type="text" id="phone" name="phone" required class="form-control"
                                     placeholder="Nomor Telepon" />
                             </div>
+                            <!-- Harga -->
+                            <div class="col mb-3">
+                                <label for="price" class="form-label">Harga</label>
+                                <input type="text" id="price" name="price" required class="form-control"
+                                    placeholder="Harga" readonly />
+                            </div>
+                            <!-- Email -->
                             <div class="col mb-3">
                                 <label for="email" class="form-label">Email</label>
                                 <input type="text" id="email" name="email" class="form-control"
@@ -63,6 +71,7 @@
                             <button type="submit" class="btn btn-primary">Save</button>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
@@ -219,6 +228,13 @@
                 });
             });
 
+
+            // Update harga ketika kategori dipilih
+            $('#type_member').change(function() {
+                var harga = $(this).find(':selected').data('harga');
+                $('#price').val(harga);
+            });
+
             $('.modal-tambah').click(function() {
                 $('#modal-form').modal('show');
 
@@ -226,6 +242,7 @@
                 $('select[name="type_member"]').val('');
                 $('input[name="name"]').val('');
                 $('input[name="phone"]').val('');
+                $('#price').val('');
                 $('input[name="email"]').val('');
                 $('input[name="exp"]').val('');
             });
