@@ -64,4 +64,8 @@ Route::get('regis/member', [RegistrationController::class, 'indexMember']);
 
 Route::get('regis/non_member', [RegistrationController::class, 'index']);
 
+Route::get('export-daftar-member', [MemberReportController::class, 'exportDaftarMember'])->name('export.daftar-member');
+Route::get('export-regis-member', [MemberReportController::class, 'exportRegisMember'])->name('export.regis-member');
+Route::get('export-regis-nonmember', [MemberReportController::class, 'exportRegisNonMember'])->name('export.regis-nonmember');
+
 

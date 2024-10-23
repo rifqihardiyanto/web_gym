@@ -9,6 +9,10 @@ use App\Models\MemberReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use App\Exports\DaftarMemberExport;
+use App\Exports\RegisMemberExport;
+use App\Exports\RegisNonMemberExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class MemberReportController extends Controller
 {
@@ -147,9 +151,63 @@ class MemberReportController extends Controller
         //
     }
 
-    public function daftarMember()
+    public function exportDaftarMember(Request $request)
     {
-        $daftarMember = DaftarMember::all();
+        $startDate = $request->input('start_date', Carbon::today()->toDateString());
+        $endDate = $request->input('end_date', Carbon::today()->toDateString());
+
+        // Validasi apakah tanggal akhir lebih besar dari tanggal mulai
+        if ($startDate > $endDate) {
+            return redirect()->back()->with('error', 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir.');
+        }
+
+        return Excel::download(new DaftarMemberExport($startDate, $endDate), 'daftar_member.xlsx');
+    }
+
+    public function daftarMember(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        // Validasi format dan rentang tanggal
+        if (!$startDate || !$endDate) {
+            $startDate = Carbon::today()->toDateString();
+            $endDate = Carbon::today()->toDateString();
+        } elseif ($startDate > $endDate) {
+            return redirect()->back()->with('error', 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir.');
+        }
+
+        $daftarMember = DaftarMember::with('category')
+            ->whereDate('created_at', '>=', $startDate)
+            ->whereDate('created_at', '<=', $endDate)
+            ->get();
+
         return view('dashboard.registration.daftar_member', compact('daftarMember'));
+    }
+
+    public function exportRegisMember(Request $request)
+    {
+        $startDate = $request->input('start_date', Carbon::today()->toDateString());
+        $endDate = $request->input('end_date', Carbon::today()->toDateString());
+
+        // Validasi apakah tanggal akhir lebih besar dari tanggal mulai
+        if ($startDate > $endDate) {
+            return redirect()->back()->with('error', 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir.');
+        }
+
+        return Excel::download(new RegisMemberExport($startDate, $endDate), 'regis_member.xlsx');
+    }
+
+    public function exportRegisNonMember(Request $request)
+    {
+        $startDate = $request->input('start_date', Carbon::today()->toDateString());
+        $endDate = $request->input('end_date', Carbon::today()->toDateString());
+
+        // Validasi apakah tanggal akhir lebih besar dari tanggal mulai
+        if ($startDate > $endDate) {
+            return redirect()->back()->with('error', 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir.');
+        }
+
+        return Excel::download(new RegisNonMemberExport($startDate, $endDate), 'regis_nonmember.xlsx');
     }
 }
