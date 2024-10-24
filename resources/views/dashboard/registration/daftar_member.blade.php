@@ -35,6 +35,7 @@
                             <th>Nama</th>
                             <th>ID Member</th>
                             <th>Tipe Member</th>
+                            <th>Metode Pembayaran</th>
                             <th>Harga</th>
                         </tr>
                     </thead>
@@ -45,6 +46,7 @@
                                 <td>{{ $member->name }}</td>
                                 <td>{{ $member->id_member }}</td>
                                 <td>{{ $member->category->name }}</td>
+                                <td>{{ $member->payment }}</td>
                                 <td>{{ $member->category->biaya }}</td>
                             </tr>
                         @endforeach

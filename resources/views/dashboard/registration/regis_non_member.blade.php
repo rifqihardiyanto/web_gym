@@ -56,13 +56,19 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <!-- Nama Member -->
                             <div class="col mb-3">
                                 <label for="name" class="form-label">Nama Member</label>
                                 <input type="text" id="nama" name="nama" required class="form-control"
                                     placeholder="Nama Member" />
                             </div>
-                            <!-- Harga -->
+                            <div class="col mb-3">
+                                <label for="name" class="form-label">Metode Pembayaran</label>
+                                <select class="form-select" id="payment" name="payment" required>
+                                    <option value="" disabled selected>Pilih Payment</option>
+                                        <option value="TF">TF</option>
+                                        <option value="CASH">CASH</option>
+                                </select>
+                            </div>
                             <div class="col mb-3">
                                 <label for="harga" class="form-label">Harga</label>
                                 <input type="text" id="harga" name="harga" required class="form-control"
@@ -90,6 +96,7 @@
                     <tr>
                         <th>Nama</th>
                         <th>Kategori</th>
+                        <th>Payment</th>
                         <th>Harga</th>
                         <th>Tanggal</th>
                     </tr>
@@ -126,6 +133,7 @@
                         <tr> 
                             <td> ${val.nama} </td> 
                             <td> ${val.category.name} </td> 
+                            <td> ${val.payment} </td> 
                             <td> ${val.harga} </td> 
                             <td> ${formattedDate} </td> 
                         </tr>`;
@@ -191,8 +199,8 @@
             $('.modal-tambah').click(function() {
                 $('#modal-form').modal('show');
 
-                // Reset nilai field pada modal untuk penambahan member baru
                 $('#kategori').val('');
+                $('#payment').val('');
                 $('#harga').val('');
                 $('#nama').val('');
             });

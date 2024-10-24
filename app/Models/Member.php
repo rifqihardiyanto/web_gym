@@ -12,7 +12,7 @@ class Member extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['type_member', 'name', 'phone', 'exp', 'email'];
+    protected $fillable = ['type_member', 'name', 'phone', 'exp', 'email', 'payment'];
 
     protected static function boot()
     {

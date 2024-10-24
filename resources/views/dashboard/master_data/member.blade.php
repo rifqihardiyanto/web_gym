@@ -36,31 +36,34 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <!-- Nama Member -->
                             <div class="col mb-3">
                                 <label for="name" class="form-label">Nama Member</label>
                                 <input type="text" id="name" name="name" required class="form-control"
                                     placeholder="Nama Member" />
                             </div>
-                            <!-- Nomor Telepon -->
                             <div class="col mb-3">
                                 <label for="phone" class="form-label">Nomor Telepon</label>
                                 <input type="text" id="phone" name="phone" required class="form-control"
                                     placeholder="Nomor Telepon" />
                             </div>
-                            <!-- Harga -->
+                            <div class="col mb-3">
+                                <label for="phone" class="form-label">Metode Pembayaran</label>
+                                <select class="form-select" id="payment" name="payment" required>
+                                    <option value="" disabled selected>Pilih Payment</option>
+                                    <option value="TF">TF</option>
+                                    <option value="CASH">CASH</option>
+                                </select>
+                            </div>
                             <div class="col mb-3">
                                 <label for="price" class="form-label">Harga</label>
                                 <input type="text" id="price" name="price" required class="form-control"
                                     placeholder="Harga" readonly />
                             </div>
-                            <!-- Email -->
                             <div class="col mb-3">
                                 <label for="email" class="form-label">Email</label>
                                 <input type="text" id="email" name="email" class="form-control"
                                     placeholder="Email" />
                             </div>
-                            <!-- Tanggal Kedaluwarsa -->
                             <div class="col mb-3">
                                 <label for="exp" class="form-label">Masa Berlaku</label>
                                 <input type="date" id="exp" name="exp" required class="form-control" />
@@ -227,8 +230,7 @@
                     }
                 });
             });
-
-
+            
             // Update harga ketika kategori dipilih
             $('#type_member').change(function() {
                 var harga = $(this).find(':selected').data('harga');
@@ -242,6 +244,7 @@
                 $('select[name="type_member"]').val('');
                 $('input[name="name"]').val('');
                 $('input[name="phone"]').val('');
+                $('select[name="payment"]').val('');
                 $('#price').val('');
                 $('input[name="email"]').val('');
                 $('input[name="exp"]').val('');
@@ -272,7 +275,7 @@
                         "Authorization": "Bearer " + token
                     },
                     success: function(data) {
-                        $('#modal-form').modal('hide'); // Tutup modal
+                        $('#modal-form').modal('hide');
                         if (data.success) {
                             Swal.fire({
                                 icon: 'success',
@@ -282,7 +285,7 @@
                                 backdrop: 'rgba(0,0,0,0.5)',
                             }).then(() => {
                                 loadMembers
-                                    (); // Load data baru setelah ditambah atau diubah
+                                    ();
                             });
                         }
                     }
@@ -290,21 +293,6 @@
             });
 
             $(document).on('click', '.modal-ubah', function() {
-                const id = $(this).data('id');
-                $('#modal-form').modal('show');
-
-                $.get('api/members/' + id, function({
-                    data
-                }) {
-                    $('select[name="type_member"]').val(data.type_member);
-                    $('input[name="name"]').val(data.name);
-                    $('input[name="phone"]').val(data.phone);
-                    $('input[name="email"]').val(data.email);
-                    $('input[name="exp"]').val(data.exp);
-                });
-            });
-
-            $(document).on('click', '.modal-ubah', function() {
                 $('#modal-form').modal('show');
                 const id = $(this).data('id');
 
@@ -315,6 +303,7 @@
                     $('input[name="name"]').val(data.name);
                     $('input[name="phone"]').val(data.phone);
                     $('input[name="email"]').val(data.email);
+                    $('select[name="payment"]').val(data.payment);
                     $('input[name="exp"]').val(data.exp);
                 });
 

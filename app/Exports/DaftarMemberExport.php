@@ -47,6 +47,7 @@ class DaftarMemberExport implements FromCollection, WithHeadings, WithMapping, W
             'Nama',
             'ID Member',
             'Tipe Member',
+            'Metode Pembayaran',
             'Harga',
         ];
     }
@@ -61,6 +62,7 @@ class DaftarMemberExport implements FromCollection, WithHeadings, WithMapping, W
             $member->name,
             $member->id_member,
             $member->category->name,
+            $member->payment,
             $member->category->biaya,
         ];
     }
