@@ -9,7 +9,7 @@ class DaftarMember extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = ['name', 'id_member', 'type_member', 'payment'];
 
     public function category()
     {

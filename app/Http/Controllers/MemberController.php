@@ -59,10 +59,11 @@ class MemberController extends Controller
         $validator = Validator::make($request->all(), [
             'type_member' => 'required|string|max:50',
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|unique:members,phone|max:20',
+            'phone' => 'required|string|max:20',
             'price' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
-            'exp' => 'required|date'
+            'exp' => 'required|date',
+            'payment' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -77,10 +78,10 @@ class MemberController extends Controller
             'name' => $member->name,
             'id_member' => $member->id_member,
             'price' => $member->price,
+            'payment' => $request->payment,
             'type_member' => $member->type_member,
         ]);
 
-        // Redirect ke WhatsApp
         return response()->json([
             'success' => true,
             'message' => 'Berhasil di Tambah',
@@ -116,6 +117,7 @@ class MemberController extends Controller
             'type_member' => 'required',
             'name' => 'required',
             'phone' => 'required',
+            'payment' => 'required',
             'exp' => 'required'
         ]);
 
@@ -130,6 +132,7 @@ class MemberController extends Controller
             'name' => $member->name,
             'id_member' => $member->id_member, 
             'type_member' => $member->type_member,
+            'payment' => $member->payment,
         ]);
 
         // Mengembalikan respons

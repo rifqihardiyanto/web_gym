@@ -76,6 +76,7 @@ class NonMemberReportController extends Controller
         $validator = Validator::make($request->all(), [
             'nama' => 'required|string|max:50',
             'kategori' => 'required|string|max:255',
+            'payment' => 'required|string|max:255',
             'harga' => 'required',
         ]);
 

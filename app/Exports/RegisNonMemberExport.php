@@ -49,6 +49,7 @@ class RegisNonMemberExport implements FromCollection, WithHeadings, WithMapping,
             'Tanggal Daftar',
             'Nama',
             'Tipe Member',
+            'Metode Pembayaran',
             'Harga',
         ];
     }
@@ -62,6 +63,7 @@ class RegisNonMemberExport implements FromCollection, WithHeadings, WithMapping,
             $member->created_at->format('Y-m-d'),
             $member->nama,
             $member->category->name,
+            $member->payment,
             $member->category->biaya,
         ];
     }
@@ -89,6 +91,7 @@ class RegisNonMemberExport implements FromCollection, WithHeadings, WithMapping,
             'B' => 30,
             'C' => 30,
             'D' => 30,
+            'E' => 30,
         ];
     }
 }
