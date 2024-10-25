@@ -137,7 +137,8 @@
                                     <td>
                                         <a data-toggle="modal" href="#modal-form" data-id="${val.id}" class="btn btn-warning modal-ubah">Edit </a>    
                                         <a href="#" data-id="${val.id}" class="btn btn-danger btn-hapus">Hapus </a>    
-                                        <a href="#" data-id="${val.id}" class="btn btn-info btn-wa">WA </a>    
+                                        <a href="#" data-id="${val.id}" class="btn btn-info btn-wa">WA </a>
+                                        <a href="#" data-id="${val.id}" class="btn btn-primary btn-email">Kirim Email</a>
                                     </td>
                                 </tr>`;
                         });
@@ -191,6 +192,63 @@
                 });
             });
 
+            $(document).on('click', '.btn-email', function() {
+                const id = $(this).data('id');
+
+                $.get(`/api/members/${id}`, function({
+                    data
+                }) {
+                    const email = data.email;
+                    const name = data.name;
+                    const message = `Halo, ${name}, terima kasih telah menjadi member kami.`;
+
+                    if (!email) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: 'Email member tidak tersedia!',
+                        });
+                        return;
+                    }
+
+                    Swal.fire({
+                        title: 'Yakin ingin mengirim email?',
+                        text: `Email akan dikirim ke ${name}.`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ya, kirim!',
+                        cancelButtonText: 'Batal',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: `/api/send-email`,
+                                method: 'POST',
+                                data: {
+                                    email,
+                                    message
+                                },
+                                success: function(response) {
+                                    if (response.success) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Sukses',
+                                            text: 'Email berhasil dikirim!',
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Gagal',
+                                            text: 'Email gagal dikirim!',
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    });
+                });
+            });
 
             $(document).on('click', '.btn-hapus', function() {
                 const id = $(this).data('id');
@@ -230,7 +288,7 @@
                     }
                 });
             });
-            
+
             // Update harga ketika kategori dipilih
             $('#type_member').change(function() {
                 var harga = $(this).find(':selected').data('harga');
