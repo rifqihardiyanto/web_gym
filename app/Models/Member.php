@@ -19,10 +19,9 @@ class Member extends Model
         parent::boot();
         self::creating(function ($model) {
             do {
-                // Menghasilkan 3 digit angka acak
-                $randomNumber = str_pad(random_int(0, 999), 3, '0', STR_PAD_LEFT); // Menghasilkan angka acak dari 0 hingga 999
-                $model->id_member = 'PG' . $randomNumber; // Tetapkan id_member
-            } while (Member::where('id_member', $model->id_member)->exists()); // Periksa apakah id_member sudah ada
+                $randomNumber = str_pad(random_int(0, 999), 3, '0', STR_PAD_LEFT);
+                $model->id_member = 'PG' . $randomNumber;
+            } while (Member::where('id_member', $model->id_member)->exists());
         });
     }
 

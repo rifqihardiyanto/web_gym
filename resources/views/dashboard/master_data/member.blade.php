@@ -132,7 +132,7 @@
                                     <td> ${val.category.name} </td> 
                                     <td> ${val.name} </td> 
                                     <td> ${val.phone} </td> 
-                                    <td> ${val.id_member} </td> 
+                                    <td>PG-${val.id} </td> 
                                     <td> ${remainingDays} hari </td>
                                     <td>
                                         <a data-toggle="modal" href="#modal-form" data-id="${val.id}" class="btn btn-warning modal-ubah">Edit </a>    

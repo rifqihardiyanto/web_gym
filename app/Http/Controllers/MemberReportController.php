@@ -63,14 +63,14 @@ class MemberReportController extends Controller
 
     public function searchMember(Request $request)
     {
-        $memberId = $request->get('id_member'); // Pastikan mendapatkan parameter dengan nama yang sesuai
+        $memberId = $request->get('id'); // Mengambil parameter 'id' dari request
 
-        // Cari member berdasarkan kolom id_member
-        $member = Member::with('category')->where('id_member', $memberId)->first();
+        // Cari member berdasarkan kolom 'id'
+        $member = Member::with('category')->where('id', $memberId)->first();
 
         if ($member) {
             return response()->json([
-                'id_member' => $member->id_member,
+                'id_member' => $member->id_member, // Masih mengembalikan 'id_member' sebagai respon
                 'name' => $member->name,
                 'exp' => $member->exp,
                 'type_member' => $member->category ? $member->category->name : null,
@@ -97,7 +97,7 @@ class MemberReportController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id_member' => 'required|exists:members,id_member',
+            'id_member' => 'required|',
             'nama' => 'required|string|max:50',
             'kategori' => 'required|string|max:255',
             'harga' => 'required|numeric',
