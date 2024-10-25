@@ -213,7 +213,7 @@
                     const message = `Halo, ${name}!\n\n` +
                         `Terima kasih telah menjadi member kami di Prasasti Gym.\n` +
                         `ID Member Anda adalah: **${idMember}**\n` +
-                        `Tanggal Kedaluwarsa: **${exp}**\n\n` +
+                        `Tanggal Kedaluwarsa: **${expDate}**\n\n` +
                         `Kami berharap Anda terus berlatih dengan semangat! 💪\n` +
                         `Jika ada pertanyaan atau butuh bantuan, jangan ragu untuk menghubungi kami.\n` +
                         `Terima kasih telah menjadi bagian dari keluarga Prasasti Gym!`
