@@ -168,8 +168,15 @@
                     const idMember = data.id_member;
                     const name = data.name;
                     const exp = data.exp;
+
                     const message = encodeURIComponent(
-                        `Halo, ${name}. ID Member Anda adalah ${idMember}. Berakhir sampai ${exp}`
+                        `Halo, ${name}!\n\n` +
+                        `Terima kasih telah menjadi member kami di Prasasti Gym.\n` +
+                        `ID Member Anda adalah: **${idMember}**\n` +
+                        `Tanggal Kedaluwarsa: **${exp}**\n\n` +
+                        `Kami berharap Anda terus berlatih dengan semangat! 💪\n` +
+                        `Jika ada pertanyaan atau butuh bantuan, jangan ragu untuk menghubungi kami.\n` +
+                        `Terima kasih telah menjadi bagian dari keluarga Prasasti Gym!`
                     );
 
                     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
@@ -200,7 +207,17 @@
                 }) {
                     const email = data.email;
                     const name = data.name;
-                    const message = `Halo, ${name}, terima kasih telah menjadi member kami.`;
+                    const idMember = data.id_member;
+                    const expDate = data.exp;
+
+                    const message = `Halo, ${name}!\n\n` +
+                        `Terima kasih telah menjadi member kami di Prasasti Gym.\n` +
+                        `ID Member Anda adalah: **${idMember}**\n` +
+                        `Tanggal Kedaluwarsa: **${exp}**\n\n` +
+                        `Kami berharap Anda terus berlatih dengan semangat! 💪\n` +
+                        `Jika ada pertanyaan atau butuh bantuan, jangan ragu untuk menghubungi kami.\n` +
+                        `Terima kasih telah menjadi bagian dari keluarga Prasasti Gym!`
+                        console.log(message);
 
                     if (!email) {
                         Swal.fire({
