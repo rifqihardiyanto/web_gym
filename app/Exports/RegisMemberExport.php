@@ -49,7 +49,6 @@ class RegisMemberExport implements FromCollection, WithHeadings, WithMapping, Wi
             'Nama',
             'ID Member',
             'Tipe Member',
-            'Harga',
         ];
     }
 
@@ -60,10 +59,9 @@ class RegisMemberExport implements FromCollection, WithHeadings, WithMapping, Wi
     {
         return [
             $member->created_at->format('Y-m-d'),
-            $member->name,
+            $member->nama,
             $member->id_member,
             $member->category->name,
-            $member->category->biaya,
         ];
     }
 
@@ -90,7 +88,6 @@ class RegisMemberExport implements FromCollection, WithHeadings, WithMapping, Wi
             'B' => 30,
             'C' => 30,
             'D' => 30,
-            'E' => 30,
         ];
     }
 }

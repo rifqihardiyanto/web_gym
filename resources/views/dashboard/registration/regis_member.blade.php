@@ -45,7 +45,7 @@
                             <div class="mb-3">
                                 <label for="id_member" class="form-label">ID Member</label>
                                 <div class="input-group">
-                                    <input type="text" id="id_member" name="id_member" required class="form-control"
+                                    <input type="text" id="id" name="id_member" required class="form-control"
                                         placeholder="Masukkan ID Member" />
                                     <button type="button" class="btn btn-outline-secondary"
                                         id="btn-cari-member">Cari</button>
@@ -189,10 +189,10 @@
 
 
             $('#btn-cari-member').click(function() {
-                const idMember = $('#id_member').val();
+                const id = $('#id').val(); // Ambil nilai dari input 'id'
 
                 $.ajax({
-                    url: `/api/member/search?id_member=${idMember}`,
+                    url: `/api/member/search?id=${id}`, // Menggunakan 'id' sebagai parameter di URL
                     method: 'GET',
                     success: function(response) {
                         if (response) {
@@ -205,8 +205,7 @@
                             const today = new Date();
                             if (expDate < today) {
                                 $('#expired-notification').removeClass(
-                                    'd-none'); // Tampilkan notifikasi expired
-                                // Tampilkan alert SweetAlert
+                                'd-none'); // Tampilkan notifikasi expired
                                 Swal.fire({
                                     icon: 'warning',
                                     title: 'Member Expired',
@@ -214,12 +213,11 @@
                                     backdrop: 'rgba(0,0,0,0.5)', // Atur backdrop jika ingin
                                 }).then(() => {
                                     $('#modal-form').modal(
-                                        'hide'
-                                    ); // Tutup modal setelah alert ditampilkan
+                                    'hide'); // Tutup modal setelah alert ditampilkan
                                 });
                             } else {
                                 $('#expired-notification').addClass(
-                                    'd-none'); // Sembunyikan notifikasi
+                                'd-none'); // Sembunyikan notifikasi
                             }
                         }
                     },
@@ -233,24 +231,21 @@
                                 'Terjadi kesalahan saat menghubungi server. Silakan coba lagi nanti.';
                         }
 
-                        // Tampilkan alert SweetAlert
                         Swal.fire({
                             icon: 'error',
                             title: 'Kesalahan',
                             text: errorMessage,
-                            backdrop: 'rgba(0,0,0,0.5)', // Atur backdrop jika ingin
+                            backdrop: 'rgba(0,0,0,0.5)',
                         }).then(() => {
-                            $('#modal-form').modal(
-                                'hide'); // Tutup modal setelah menampilkan alert
+                            $('#modal-form').modal('hide');
                         });
 
                         $('#nama, #kategori, #harga').val(
-                            ''); // Reset input jika terjadi kesalahan
-                        $('#expired-notification').addClass('d-none'); // Sembunyikan notifikasi
+                        ''); // Reset input jika terjadi kesalahan
+                        $('#expired-notification').addClass('d-none');
                     }
                 });
             });
-
 
             // Reset nilai field pada modal untuk penambahan member baru
             $('.modal-tambah').click(function() {
