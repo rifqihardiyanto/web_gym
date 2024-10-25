@@ -18,12 +18,11 @@ class Member extends Model
     {
         parent::boot();
         self::creating(function ($model) {
-            // Mengambil 4 digit terakhir dari phone, atau isi dengan default "0000" jika phone kosong
-            $lastFourDigits = substr($model->phone, -4) ?: "0000";
-
-            // Menggabungkan 4 digit terakhir dari phone dengan ID unik yang di-generate
-            $uniqueId = strtoupper(bin2hex(random_bytes(3))); // bisa diganti jumlah byte sesuai kebutuhan
-            $model->id_member = $uniqueId . $lastFourDigits;
+            do {
+                // Menghasilkan 3 digit angka acak
+                $randomNumber = str_pad(random_int(0, 999), 3, '0', STR_PAD_LEFT); // Menghasilkan angka acak dari 0 hingga 999
+                $model->id_member = 'PG' . $randomNumber; // Tetapkan id_member
+            } while (Member::where('id_member', $model->id_member)->exists()); // Periksa apakah id_member sudah ada
         });
     }
 
