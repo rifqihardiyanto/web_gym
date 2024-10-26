@@ -141,7 +141,7 @@
                     row += `
                         <tr> 
                             <td>${val.nama}</td> 
-                            <td>${val.id_member}</td> 
+                            <td>PG-${val.id_member}</td> 
                             <td>${val.category.name}</td> 
                             <td>${val.harga}</td> 
                             <td>${formattedDate}${expired}</td> 
