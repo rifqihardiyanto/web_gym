@@ -60,7 +60,7 @@ class DaftarMemberExport implements FromCollection, WithHeadings, WithMapping, W
         return [
             $member->created_at->format('Y-m-d'),
             $member->name,
-            'PG-' . $member->id,
+            'PG-' . $member->id_member,
             $member->category->name,
             $member->payment,
             $member->category->biaya,

@@ -76,7 +76,7 @@ class MemberController extends Controller
 
         $daftarMember = DaftarMember::create([
             'name' => $member->name,
-            'id_member' => $member->id_member,
+            'id_member' => $member->id,
             'price' => $member->price,
             'payment' => $request->payment,
             'type_member' => $member->type_member,
@@ -130,7 +130,7 @@ class MemberController extends Controller
 
         $daftarMember = DaftarMember::create([
             'name' => $member->name,
-            'id_member' => $member->id_member, 
+            'id_member' => $member->id,
             'type_member' => $member->type_member,
             'payment' => $member->payment,
         ]);

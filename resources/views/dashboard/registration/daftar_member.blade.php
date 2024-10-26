@@ -44,7 +44,7 @@
                             <tr>
                                 <td>{{ $member->created_at->format('Y-m-d') }}</td>
                                 <td>{{ $member->name }}</td>
-                                <td>PG-{{ $member->id }}</td>
+                                <td>PG-{{ $member->id_member }}</td>
                                 <td>{{ $member->category->name }}</td>
                                 <td>{{ $member->payment }}</td>
                                 <td>{{ $member->category->biaya }}</td>
