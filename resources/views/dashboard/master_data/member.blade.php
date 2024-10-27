@@ -165,7 +165,7 @@
                     data
                 }) {
                     const phoneNumber = data.phone;
-                    const idMember = data.id_member;
+                    const idMember = data.id;
                     const name = data.name;
                     const exp = data.exp;
 
@@ -207,7 +207,7 @@
                 }) {
                     const email = data.email;
                     const name = data.name;
-                    const idMember = data.id_member;
+                    const idMember = data.id;
                     const expDate = data.exp;
 
                     const message = `Halo, ${name}!\n\n` +
@@ -378,6 +378,7 @@
                     $('input[name="name"]').val(data.name);
                     $('input[name="phone"]').val(data.phone);
                     $('input[name="email"]').val(data.email);
+                    $('#price').val('');
                     $('select[name="payment"]').val(data.payment);
                     $('input[name="exp"]').val(data.exp);
                 });
