@@ -118,6 +118,7 @@ class MemberController extends Controller
             'name' => 'required',
             'phone' => 'required',
             'payment' => 'required',
+            'email' => 'required',
             'exp' => 'required'
         ]);
 
@@ -125,25 +126,32 @@ class MemberController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        // Cek apakah ada perubahan pada field `exp`
         $input = $request->all();
+        $expUpdated = $input['exp'] != $member->exp;
+
+        // Update data member
         $member->update($input);
 
-        $daftarMember = DaftarMember::create([
-            'name' => $member->name,
-            'id_member' => $member->id,
-            'type_member' => $member->type_member,
-            'payment' => $member->payment,
-        ]);
+        // Jika `exp` berubah, simpan data baru ke tabel `DaftarMember`
+        $daftarMember = null;
+        if ($expUpdated) {
+            $daftarMember = DaftarMember::create([
+                'name' => $member->name,
+                'id_member' => $member->id,
+                'type_member' => $member->type_member,
+                'payment' => $member->payment,
+            ]);
+        }
 
         // Mengembalikan respons
         return response()->json([
             'success' => true,
-            'message' => 'Berhasil DiUpdate dan Data Baru Ditambahkan ke Daftar Member',
+            'message' => 'Berhasil DiUpdate' . ($expUpdated ? ' dan Data Baru Ditambahkan ke Daftar Member' : ''),
             'data' => $member,
             'daftar_member' => $daftarMember
         ]);
     }
-
 
     /**
      * Remove the specified resource from storage.
