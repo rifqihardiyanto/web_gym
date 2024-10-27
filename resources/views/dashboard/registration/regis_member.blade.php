@@ -13,25 +13,6 @@
                 Registrasi @yield('title')
             </button>
 
-            <div class="row mb-3">
-                <div class="col-lg-5">
-                    <label for="start-date" class="form-label">Tanggal Mulai</label>
-                    <input type="date" id="start_date" class="form-control">
-                </div>
-                <div class="col-lg-5">
-                    <label for="end-date" class="form-label">Tanggal Akhir</label>
-                    <input type="date" id="end_date" class="form-control">
-                </div>
-                <div class="col-lg-2 d-flex align-items-end">
-                    <button id="btn-search" class="btn btn-primary">Cari</button>
-                </div>
-            </div>
-
-            <div class="d-flex mb-3">
-                <!-- Tombol untuk ekspor data -->
-                <button type="button" class="btn btn-success" id="export-btn">Ekspor</button>
-            </div>
-
             <!-- Modal -->
             <div class="modal modal-top fade" id="modal-form" tabindex="-1">
                 <div class="modal-dialog">
@@ -83,22 +64,39 @@
     </div>
 
     <div class="card">
-        <h5 class="card-header">Data Registrasi | @yield('title')</h5>
-        <div class="table-responsive text-nowrap">
-            <table class="table">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Nama</th>
-                        <th>ID Member</th>
-                        <th>Kategori</th>
-                        <th>Harga</th>
-                        <th>Tanggal</th>
-                    </tr>
-                </thead>
-                <tbody class="table-border-bottom-10">
-                    <!-- Isi data member dari JavaScript -->
-                </tbody>
-            </table>
+        <h5 class="card-header">Data Registrasi @yield('title')</h5>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <label for="start-date" class="form-label">Tanggal Mulai</label>
+                    <input type="date" id="start_date" class="form-control">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="end-date" class="form-label">Tanggal Akhir</label>
+                    <input type="date" id="end_date" class="form-control">
+                </div>
+            </div>
+            <div class="d-flex mb-3">
+                <button id="btn-search" class="btn btn-primary me-2">Filter</button>
+
+                <button type="button" class="btn btn-success" id="export-btn">Ekspor</button>
+            </div>
+            <div class="table-responsive text-nowrap">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>ID Member</th>
+                            <th>Kategori</th>
+                            <th>Harga</th>
+                            <th>Tanggal</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-10">
+                        <!-- Isi data member dari JavaScript -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     <!--/ Bootstrap Table with Header Dark -->
@@ -205,7 +203,7 @@
                             const today = new Date();
                             if (expDate < today) {
                                 $('#expired-notification').removeClass(
-                                'd-none'); // Tampilkan notifikasi expired
+                                    'd-none'); // Tampilkan notifikasi expired
                                 Swal.fire({
                                     icon: 'warning',
                                     title: 'Member Expired',
@@ -213,11 +211,12 @@
                                     backdrop: 'rgba(0,0,0,0.5)', // Atur backdrop jika ingin
                                 }).then(() => {
                                     $('#modal-form').modal(
-                                    'hide'); // Tutup modal setelah alert ditampilkan
+                                        'hide'
+                                    ); // Tutup modal setelah alert ditampilkan
                                 });
                             } else {
                                 $('#expired-notification').addClass(
-                                'd-none'); // Sembunyikan notifikasi
+                                    'd-none'); // Sembunyikan notifikasi
                             }
                         }
                     },
@@ -241,7 +240,7 @@
                         });
 
                         $('#nama, #kategori, #harga').val(
-                        ''); // Reset input jika terjadi kesalahan
+                            ''); // Reset input jika terjadi kesalahan
                         $('#expired-notification').addClass('d-none');
                     }
                 });
