@@ -172,7 +172,7 @@
                     const message = encodeURIComponent(
                         `Halo, ${name}!\n\n` +
                         `Terima kasih telah menjadi member kami di Prasasti Gym.\n` +
-                        `ID Member Anda adalah: **${idMember}**\n` +
+                        `ID Member Anda adalah: **PG-${idMember}**\n` +
                         `Tanggal Kedaluwarsa: **${exp}**\n\n` +
                         `Kami berharap Anda terus berlatih dengan semangat! 💪\n` +
                         `Jika ada pertanyaan atau butuh bantuan, jangan ragu untuk menghubungi kami.\n` +
@@ -212,7 +212,7 @@
 
                     const message = `Halo, ${name}!\n\n` +
                         `Terima kasih telah menjadi member kami di Prasasti Gym.\n` +
-                        `ID Member Anda adalah: **${idMember}**\n` +
+                        `ID Member Anda adalah: **PG-${idMember}**\n` +
                         `Tanggal Kedaluwarsa: **${expDate}**\n\n` +
                         `Kami berharap Anda terus berlatih dengan semangat! 💪\n` +
                         `Jika ada pertanyaan atau butuh bantuan, jangan ragu untuk menghubungi kami.\n` +
