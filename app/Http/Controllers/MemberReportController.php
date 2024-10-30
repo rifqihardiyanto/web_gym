@@ -148,7 +148,12 @@ class MemberReportController extends Controller
      */
     public function destroy(MemberReport $memberReport)
     {
-        //
+        $memberReport->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Berhasil Dihapus'
+        ]);
     }
 
     public function exportDaftarMember(Request $request)

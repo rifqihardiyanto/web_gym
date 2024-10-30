@@ -125,6 +125,11 @@ class NonMemberReportController extends Controller
      */
     public function destroy(NonMemberReport $nonMemberReport)
     {
-        //
+        $nonMemberReport->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Berhasil Dihapus'
+        ]);
     }
 }

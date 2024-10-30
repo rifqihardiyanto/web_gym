@@ -90,6 +90,7 @@
                             <th>Kategori</th>
                             <th>Harga</th>
                             <th>Tanggal</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="table-border-bottom-10">
@@ -143,10 +144,56 @@
                             <td>${val.category.name}</td> 
                             <td>${val.harga}</td> 
                             <td>${formattedDate}${expired}</td> 
+                            <td>
+                                <button class="btn btn-danger btn-delete" data-id="${val.id}">Delete</button>
+                            </td>
                         </tr>`;
                 });
                 $('tbody').html(row); // Ganti konten tabel dengan baris yang baru
             }
+            $(document).on('click', '.btn-delete', function() {
+                const id = $(this).data('id');
+                const token = localStorage.getItem('token'); // Mendapatkan token dari storage
+
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Data yang sudah dihapus tidak dapat dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, hapus!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: `/api/member-reports/${id}`,
+                            type: 'DELETE',
+                            headers: {
+                                "Authorization": "Bearer " + token
+                            },
+                            success: function(data) {
+                                if (data.success) {
+                                    Swal.fire(
+                                        'Dihapus!',
+                                        'Data berhasil dihapus.',
+                                        'success'
+                                    ).then(() => {
+                                        location
+                                    .reload(); // Reload halaman setelah penghapusan
+                                    });
+                                }
+                            },
+                            error: function(jqXHR) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Kesalahan',
+                                    text: 'Gagal menghapus data. Silakan coba lagi.',
+                                });
+                            }
+                        });
+                    }
+                });
+            });
 
             // Fungsi untuk mencari data berdasarkan rentang tanggal
             $('#btn-search').click(function() {
