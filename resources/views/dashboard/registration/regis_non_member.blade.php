@@ -118,6 +118,8 @@
 
             function displayData(data) {
                 let row = '';
+                let totalHarga = 0; // Variable to store total harga
+
                 data.map(function(val) {
                     const createdDate = new Date(val.created_at);
                     const options = {
@@ -127,25 +129,45 @@
                     };
                     const formattedDate = createdDate.toLocaleDateString('id-ID', options);
 
+                    // Add each harga to totalHarga
+                    totalHarga += parseFloat(val.harga);
+
+                    // Format harga with "Rp" and remove decimal places
+                    const formattedHarga = 'Rp ' + Math.round(parseFloat(val
+                    .harga)); // Rounded to the nearest integer
+
                     row += `
-                        <tr> 
-                            <td> ${val.nama} </td> 
-                            <td> ${val.category.name} </td> 
-                            <td> ${val.payment} </td> 
-                            <td> ${val.harga} </td> 
-                            <td> ${formattedDate} </td>
-                            <td>
-                                <button class="btn btn-danger btn-delete" data-id="${val.id}">Hapus</button>
-                            </td>
-                        </tr>`;
+            <tr> 
+                <td> ${val.nama} </td> 
+                <td> ${val.category.name} </td> 
+                <td> ${val.payment} </td> 
+                <td> ${formattedHarga} </td> 
+                <td> ${formattedDate} </td>
+                <td>
+                    <button class="btn btn-danger btn-delete" data-id="${val.id}">Hapus</button>
+                </td>
+            </tr>`;
                 });
 
+                const formattedTotalHarga = 'Rp ' + Math.round(totalHarga); // Rounded to the nearest integer
+
+                row += `
+            <tr>
+                <td colspan="3" class="text-end"><strong>Total</strong></td>
+                <td><strong>${formattedTotalHarga}</strong></td>
+                <td colspan="2"></td>
+            </tr>
+    `;
+
                 $('tbody').html(row);
+
+                // Set up delete button functionality
                 $('.btn-delete').click(function() {
                     const id = $(this).data('id');
                     deleteNonMemberReport(id);
                 });
             }
+
 
             function deleteNonMemberReport(id) {
                 Swal.fire({
@@ -173,7 +195,7 @@
                                         'success'
                                     ).then(() => {
                                         location
-                                    .reload(); // Reload halaman setelah penghapusan
+                                            .reload(); // Reload halaman setelah penghapusan
                                     });
                                 }
                             },
