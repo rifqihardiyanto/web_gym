@@ -95,6 +95,7 @@
                             <th>Payment</th>
                             <th>Harga</th>
                             <th>Tanggal</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="table-border-bottom-10">
@@ -132,11 +133,58 @@
                             <td> ${val.category.name} </td> 
                             <td> ${val.payment} </td> 
                             <td> ${val.harga} </td> 
-                            <td> ${formattedDate} </td> 
+                            <td> ${formattedDate} </td>
+                            <td>
+                                <button class="btn btn-danger btn-delete" data-id="${val.id}">Hapus</button>
+                            </td>
                         </tr>`;
                 });
 
                 $('tbody').html(row);
+                $('.btn-delete').click(function() {
+                    const id = $(this).data('id');
+                    deleteNonMemberReport(id);
+                });
+            }
+
+            function deleteNonMemberReport(id) {
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: 'Data akan dihapus secara permanen!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: `/api/non-member-reports/${id}`,
+                            type: 'DELETE',
+                            headers: {
+                                "Authorization": "Bearer " + localStorage.getItem('token')
+                            },
+                            success: function(data) {
+                                if (data.success) {
+                                    Swal.fire(
+                                        'Dihapus!',
+                                        'Data berhasil dihapus.',
+                                        'success'
+                                    ).then(() => {
+                                        location
+                                    .reload(); // Reload halaman setelah penghapusan
+                                    });
+                                }
+                            },
+                            error: function(jqXHR) {
+                                const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON
+                                    .message : 'Terjadi kesalahan saat menghapus data.';
+                                Swal.fire('Kesalahan', errorMessage, 'error');
+                            }
+                        });
+                    }
+                });
             }
 
             // Mengambil data member dari API
