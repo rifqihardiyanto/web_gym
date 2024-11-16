@@ -36,6 +36,8 @@ Route::get('/', function () {
 
 // auth
 Route::get('login', [AuthController::class, 'index'])->name('login');
+Route::get('profile', [AuthController::class, 'profile'])->middleware('auth');
+Route::put('profile/update', [AuthController::class, 'update'])->name('user.update');
 Route::post('login', [AuthController::class, 'login']);
 Route::get('logout', [AuthController::class, 'logout']);
 

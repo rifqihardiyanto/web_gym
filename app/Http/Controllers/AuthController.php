@@ -17,7 +17,6 @@ class AuthController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->only('login_member');
-        
     }
 
     public function index()
@@ -25,12 +24,12 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    
+
     public function login(Request $request)
     {
         $this->validate($request, [
-            'email'=>'required|email',
-            'password'=>'required',
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
 
         $credentials = request(['email', 'password']);
@@ -59,6 +58,34 @@ class AuthController extends Controller
         ]);
     }
 
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('dashboard.profil.index', compact('user'));
+    }
+
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+
+        $validatedData = $request->validate([
+            'firstName' => 'required|string|max:255',
+            'email'     => 'required|email|max:255|unique:users,email,' . $user->id,
+            'password'  => 'nullable|string|min:6|confirmed',
+        ]);
+
+        $user->name = $validatedData['firstName'];
+        $user->email = $validatedData['email'];
+
+        if (!empty($request->password)) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return redirect()->back()->with('success', 'Profile updated successfully!');
+    }
+
 
 
     public function register_member_action(Request $request)
@@ -68,9 +95,9 @@ class AuthController extends Controller
             'no_hp' => 'required',
             'password' => 'required',
             'email' => 'required|email',
-            ]);
+        ]);
 
-        if ($validator->fails()){
+        if ($validator->fails()) {
             Session::flash('errors', $validator->errors()->toArray());
             return redirect('login_member2');
         }
@@ -96,22 +123,22 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        if ($validator->fails()){
+        if ($validator->fails()) {
             session()->flash('status', 'Email atau Password Salah!');
             return redirect('login_member2');
         }
 
         $credentials = $request->only('email', 'password');
         $member = Member::where('email', $request->email)->first();
-        if($member){
-            if( Auth::guard('webmember')->attempt($credentials)){
+        if ($member) {
+            if (Auth::guard('webmember')->attempt($credentials)) {
                 $request->session()->regenerate();
                 return redirect()->route('public');
-            }else{
-            session()->flash('status', 'Email atau Password Salah!');
-            return redirect('login_member2');
+            } else {
+                session()->flash('status', 'Email atau Password Salah!');
+                return redirect('login_member2');
             }
-        }else{
+        } else {
             session()->flash('status', 'Email atau Password Salah!');
             return redirect('login_member2');
         }
@@ -129,6 +156,4 @@ class AuthController extends Controller
         Session::flush();
         return redirect('home');
     }
-
-
 }
