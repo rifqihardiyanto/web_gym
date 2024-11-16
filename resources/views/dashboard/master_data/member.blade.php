@@ -88,14 +88,14 @@
                 <input type="text" id="searchInput" class="form-control" placeholder="Cari ID Member..." />
             </div>
             <div class="table-responsive text-nowrap">
-                <table class="table">
+                <table class="table" id="memberTable">
                     <thead class="table-dark">
                         <tr>
-                            <th>Tipe Member</th>
-                            <th>Nama Member</th>
-                            <th>Nomor Telepon</th>
-                            <th>ID Member</th>
-                            <th>Sisa Hari</th>
+                            <th data-sort="category.name">Tipe Member</th>
+                            <th data-sort="name">Nama Member</th>
+                            <th data-sort="phone">Nomor Telepon</th>
+                            <th data-sort="id">ID Member</th>
+                            <th data-sort="remainingDays">Sisa Hari</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -120,36 +120,98 @@
                     success: function({
                         data
                     }) {
-                        let row = '';
-                        data.map(function(val) {
-                            const today = new Date();
-                            const expDate = new Date(val.exp);
-                            const timeDiff = expDate.getTime() - today.getTime();
-                            const remainingDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-                            row += `
-                                <tr> 
-                                    <td> ${val.category.name} </td> 
-                                    <td> ${val.name} </td> 
-                                    <td> ${val.phone} </td> 
-                                    <td>PG-${val.id} </td> 
-                                    <td> ${remainingDays} hari </td>
-                                    <td>
-                                        <a data-toggle="modal" href="#modal-form" data-id="${val.id}" class="btn btn-warning modal-ubah">Edit </a>    
-                                        <a href="#" data-id="${val.id}" class="btn btn-danger btn-hapus">Hapus </a>    
-                                        <a href="#" data-id="${val.id}" class="btn btn-info btn-wa">WA </a>
-                                        <a href="#" data-id="${val.id}" class="btn btn-primary btn-email">Kirim Email</a>
-                                    </td>
-                                </tr>`;
+                        const today = new Date();
+                        data.forEach(val => {
+                            val.remainingDays = Math.ceil((new Date(val.exp) - today) / (1000 *
+                                3600 * 24));
                         });
 
-                        $('tbody').html(row); // Update tbody content
+                        renderTable(data);
                     }
                 });
             }
 
-            loadMembers(); // Load members initially
+            function renderTable(data) {
+                let row = '';
+                data.forEach(val => {
+                    row += `
+            <tr> 
+                <td>${val.category.name}</td> 
+                <td>${val.name}</td> 
+                <td>${val.phone}</td> 
+                <td>PG-${val.id}</td> 
+                <td>${val.remainingDays} hari</td>
+                <td>
+                    <a data-toggle="modal" href="#modal-form" data-id="${val.id}" class="btn btn-warning modal-ubah">Edit</a>    
+                    <a href="#" data-id="${val.id}" class="btn btn-danger btn-hapus">Hapus</a>    
+                    <a href="#" data-id="${val.id}" class="btn btn-info btn-wa">WA</a>
+                    <a href="#" data-id="${val.id}" class="btn btn-primary btn-email">Kirim Email</a>
+                </td>
+            </tr>`;
+                });
+
+                $('tbody').html(row); // Update tbody content
+            }
+
             // Pencarian
+            $('#searchInput').on('keyup', function() {
+                const searchValue = $(this).val().toLowerCase();
+                $('tbody tr').filter(function() {
+                    $(this).toggle($(this).find('td:eq(3)').text().toLowerCase().indexOf(
+                        searchValue) > -1);
+                });
+            });
+
+            // Sorting
+            let currentSort = {
+                key: null,
+                asc: true
+            };
+
+            $('#memberTable th[data-sort]').on('click', function() {
+                const sortKey = $(this).data('sort');
+                const ascending = currentSort.key === sortKey ? !currentSort.asc : true;
+                currentSort = {
+                    key: sortKey,
+                    asc: ascending
+                };
+
+                $.ajax({
+                    url: '{{ url('/api/members') }}',
+                    success: function({
+                        data
+                    }) {
+                        const today = new Date();
+                        data.forEach(val => {
+                            val.remainingDays = Math.ceil((new Date(val.exp) - today) /
+                                (1000 * 3600 * 24));
+                        });
+
+                        data.sort((a, b) => {
+                            let aValue = getValueByKey(a, sortKey);
+                            let bValue = getValueByKey(b, sortKey);
+
+                            if (typeof aValue === 'string') aValue = aValue
+                            .toLowerCase();
+                            if (typeof bValue === 'string') bValue = bValue
+                            .toLowerCase();
+
+                            return ascending ? (aValue > bValue ? 1 : -1) : (aValue <
+                                bValue ? 1 : -1);
+                        });
+
+                        renderTable(data);
+                    }
+                });
+            });
+
+            function getValueByKey(obj, key) {
+                return key.split('.').reduce((o, i) => o[i], obj);
+            }
+
+            // Load members initially
+            loadMembers();
+
             $('#searchInput').on('keyup', function() {
                 const searchValue = $(this).val().toLowerCase();
                 $('tbody tr').filter(function() {
@@ -217,7 +279,7 @@
                         `Kami berharap Anda terus berlatih dengan semangat! 💪\n` +
                         `Jika ada pertanyaan atau butuh bantuan, jangan ragu untuk menghubungi kami.\n` +
                         `Terima kasih telah menjadi bagian dari keluarga Prasasti Gym!`
-                        console.log(message);
+                    console.log(message);
 
                     if (!email) {
                         Swal.fire({
