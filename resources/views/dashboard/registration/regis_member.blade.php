@@ -110,16 +110,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         $(document).ready(function() {
-            let allData = []; // Deklarasi allData di sini
+            let allData = [];
 
-            // Mengambil data member dari API
             $.ajax({
                 url: '/api/member-reports',
-                method: 'GET', // Pastikan metode GET
+                method: 'GET',
                 success: function({
                     data
                 }) {
-                    allData = data; // Simpan semua data untuk pemfilteran dan ekspor
+                    allData = data;
                     displayData(data);
                 }
             });
@@ -149,11 +148,11 @@
                             </td>
                         </tr>`;
                 });
-                $('tbody').html(row); // Ganti konten tabel dengan baris yang baru
+                $('tbody').html(row);
             }
             $(document).on('click', '.btn-delete', function() {
                 const id = $(this).data('id');
-                const token = localStorage.getItem('token'); // Mendapatkan token dari storage
+                const token = localStorage.getItem('token');
 
                 Swal.fire({
                     title: 'Apakah Anda yakin?',
@@ -179,7 +178,7 @@
                                         'success'
                                     ).then(() => {
                                         location
-                                    .reload(); // Reload halaman setelah penghapusan
+                                            .reload();
                                     });
                                 }
                             },
@@ -195,12 +194,10 @@
                 });
             });
 
-            // Fungsi untuk mencari data berdasarkan rentang tanggal
             $('#btn-search').click(function() {
                 const startDate = $('#start_date').val();
                 const endDate = $('#end_date').val();
 
-                // Panggil API dan kirim tanggal yang dipilih
                 $.ajax({
                     url: '/api/member-reports',
                     method: 'GET',
@@ -210,18 +207,16 @@
                     },
                     success: function(response) {
                         displayData(response
-                            .data); // Tampilkan data yang dikembalikan oleh backend
+                            .data);
                     }
                 });
             });
 
             $(document).ready(function() {
                 $('#export-btn').click(function() {
-                    // Ambil nilai dari input tanggal
                     var startDate = $('#start_date').val();
                     var endDate = $('#end_date').val();
 
-                    // Validasi apakah tanggal diisi
                     if (!startDate || !endDate) {
                         alert('Harap pilih rentang tanggal terlebih dahulu.');
                         return;
@@ -234,10 +229,10 @@
 
 
             $('#btn-cari-member').click(function() {
-                const id = $('#id').val(); // Ambil nilai dari input 'id'
+                const id = $('#id').val();
 
                 $.ajax({
-                    url: `/api/member/search?id=${id}`, // Menggunakan 'id' sebagai parameter di URL
+                    url: `/api/member/search?id=${id}`,
                     method: 'GET',
                     success: function(response) {
                         if (response) {
@@ -245,29 +240,35 @@
                             $('#kategori').val(response.type_member);
                             $('#harga').val(response.harga);
 
-                            // Cek tanggal exp
                             const expDate = new Date(response.exp);
                             const today = new Date();
                             if (expDate < today) {
                                 $('#expired-notification').removeClass(
-                                    'd-none'); // Tampilkan notifikasi expired
+                                    'd-none');
+                                $('.modal-footer .btn-primary')
+                                    .hide();
                                 Swal.fire({
                                     icon: 'warning',
                                     title: 'Member Expired',
                                     text: 'Member sudah expired!',
-                                    backdrop: 'rgba(0,0,0,0.5)', // Atur backdrop jika ingin
+                                    backdrop: 'rgba(0,0,0,0.5)',
                                 }).then(() => {
                                     $('#modal-form').modal(
                                         'hide'
-                                    ); // Tutup modal setelah alert ditampilkan
+                                    );
                                 });
                             } else {
                                 $('#expired-notification').addClass(
-                                    'd-none'); // Sembunyikan notifikasi
+                                    'd-none');
+                                $('.modal-footer .btn-primary')
+                                    .show();
                             }
+
                         }
                     },
                     error: function(jqXHR) {
+                        $('#modal-form').modal('hide');
+
                         let errorMessage;
 
                         if (jqXHR.status === 404) {
@@ -282,25 +283,21 @@
                             title: 'Kesalahan',
                             text: errorMessage,
                             backdrop: 'rgba(0,0,0,0.5)',
-                        }).then(() => {
-                            $('#modal-form').modal('hide');
                         });
 
-                        $('#nama, #kategori, #harga').val(
-                            ''); // Reset input jika terjadi kesalahan
+                        $('#nama, #kategori, #harga').val('');
                         $('#expired-notification').addClass('d-none');
                     }
                 });
             });
 
-            // Reset nilai field pada modal untuk penambahan member baru
             $('.modal-tambah').click(function() {
                 $('#modal-form').modal('show');
                 $('#id_member, #nama, #kategori, #harga').val('');
-                $('#expired-notification').addClass('d-none'); // Sembunyikan notifikasi saat reset
+                $('#expired-notification').addClass('d-none');
+                $('.modal-footer .btn-primary').show();
             });
 
-            // Proses Submit Form
             $('.form-regis-member').submit(function(e) {
                 e.preventDefault();
                 const token = localStorage.getItem('token');
@@ -318,18 +315,16 @@
                     },
                     success: function(data) {
                         if (data.success) {
-                            // Sembunyikan modal terlebih dahulu
                             $('#modal-form').modal('hide');
 
-                            // Tampilkan SweetAlert
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Data berhasil ditambahkan',
                                 text: 'Member baru telah ditambahkan.',
-                                backdrop: 'rgba(0,0,0,0.5)', // Atur backdrop jika ingin
+                                backdrop: 'rgba(0,0,0,0.5)',
                             }).then(() => {
                                 location
-                                    .reload(); // Reload halaman setelah alert ditutup
+                                    .reload();
                             });
                         }
                     },
@@ -341,7 +336,7 @@
                             icon: 'error',
                             title: 'Kesalahan',
                             text: errorMessage,
-                            backdrop: 'rgba(0,0,0,0.5)', // Atur backdrop jika ingin
+                            backdrop: 'rgba(0,0,0,0.5)',
                         });
                     }
                 });
