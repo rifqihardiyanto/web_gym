@@ -19,15 +19,16 @@ class AbsenController extends Controller
         $endDate = $request->end_date ? Carbon::parse($request->end_date)->endOfDay() : Carbon::today()->endOfDay();
 
         // Ambil data berdasarkan tanggal yang sudah difilter
-        $nonMemberReports = NonMemberReport::whereBetween('created_at', [$startDate, $endDate])->get();
+        $nonMemberReports = NonMemberReport::with('category')->whereBetween('created_at', [$startDate, $endDate])->get();
         $memberReports = MemberReport::with('category')->whereBetween('created_at', [$startDate, $endDate])->get();
 
         // Mapping data non member
         $nonMemberReportsData = collect($nonMemberReports->map(function ($report) {
+            $typeMemberCategory = $report->category;
             return [
                 'jam_absen' => Carbon::parse($report->created_at)->format('H:i'),
                 'nama' => $report->nama,
-                'kategori' => 'Non Member',
+                'kategori' => $typeMemberCategory ? $typeMemberCategory->name : 'Unknown',
                 'id_member' => '',
                 'payment' => $report->payment,
                 'harga' => $report->harga,
