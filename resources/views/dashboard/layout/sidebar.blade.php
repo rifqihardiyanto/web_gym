@@ -115,6 +115,12 @@
                         </li>
                     </ul>
                 </li>
+                <li class="menu-item">
+                    <a href="{{ url('absen') }}" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-dock-top"></i>
+                        <div data-i18n="Analytics">Absen</div>
+                    </a>
+                </li>
             </ul>
         </aside>
         <!-- / Menu -->
