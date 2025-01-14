@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AbsenController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OrderController;
@@ -54,6 +55,7 @@ Route::get('kategori', [CategoryController::class, 'list']);
 Route::get('member', [MemberController::class, 'list']);
 Route::get('non-member-reports', [NonMemberReportController::class, 'list']);
 Route::get('member-reports', [MemberReportController::class, 'list']);
+Route::get('absen', [AbsenController::class, 'index'])->name('absen');
 
 Route::get('daftar-member', [MemberReportController::class, 'daftarMember']);
 
@@ -69,5 +71,5 @@ Route::get('regis/non_member', [RegistrationController::class, 'index']);
 Route::get('export-daftar-member', [MemberReportController::class, 'exportDaftarMember'])->name('export.daftar-member');
 Route::get('export-regis-member', [MemberReportController::class, 'exportRegisMember'])->name('export.regis-member');
 Route::get('export-regis-nonmember', [MemberReportController::class, 'exportRegisNonMember'])->name('export.regis-nonmember');
-
+Route::get('/absen/export', [AbsenController::class, 'export'])->name('absen.export');
 
