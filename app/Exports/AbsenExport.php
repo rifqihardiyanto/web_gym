@@ -67,8 +67,8 @@ class AbsenExport implements FromCollection, WithHeadings, WithColumnFormatting,
         return [
             'Jam Absen',
             'Nama',
-            'ID Member',
             'Kategori',
+            'ID Member',
             'Payment',
             'Harga'
         ];
