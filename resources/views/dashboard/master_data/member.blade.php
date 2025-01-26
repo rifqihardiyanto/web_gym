@@ -114,6 +114,7 @@
     <script>
         $(function() {
             // Function to load members into the table
+            const invoiceRouteBase = "{{ url('invoice-member') }}";
             function loadMembers() {
                 $.ajax({
                     url: '{{ url('/api/members') }}',
@@ -146,6 +147,7 @@
                     <a href="#" data-id="${val.id}" class="btn btn-danger btn-hapus">Hapus</a>    
                     <a href="#" data-id="${val.id}" class="btn btn-info btn-wa">WA</a>
                     <a href="#" data-id="${val.id}" class="btn btn-primary btn-email">Kirim Email</a>
+                    <a href="${invoiceRouteBase}/${val.id}" target="_blank" class="btn btn-success btn-invoice">Invoice</a>
                 </td>
             </tr>`;
                 });

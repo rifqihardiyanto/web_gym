@@ -1,24 +1,26 @@
 <?php
 
 use App\Http\Controllers\AbsenController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\ProdukController;
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\ReviewController;
-use App\Http\Controllers\SliderController;
-use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MemberReportController;
 use App\Http\Controllers\NonMemberReportController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\RegistrationController;
-use App\Http\Controllers\TestimoniController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\SliderController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\TentangController;
+use App\Http\Controllers\TestimoniController;
+use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +36,9 @@ use App\Http\Controllers\TentangController;
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+Route::get('invoice-member/{id}', [InvoiceController::class, 'member']);
+Route::get('invoice-non_member/{id}', [InvoiceController::class, 'non_member']);
 
 // auth
 Route::get('login', [AuthController::class, 'index'])->name('login');
