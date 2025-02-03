@@ -31,8 +31,11 @@
                                 <label for="type_member" class="form-label">Tipe Member &#42;</label>
                                 <select class="form-select" id="type_member" name="type_member" required>
                                     @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}" data-harga="{{ $category->biaya }}">
-                                            {{ $category->name }}</option>
+                                        @if (!Str::contains(strtolower($category->name), 'old'))
+                                            <option value="{{ $category->id }}" data-harga="{{ $category->biaya }}">
+                                                {{ $category->name }}
+                                            </option>
+                                        @endif
                                     @endforeach
                                 </select>
                             </div>
@@ -115,6 +118,7 @@
         $(function() {
             // Function to load members into the table
             const invoiceRouteBase = "{{ url('invoice-member') }}";
+
             function loadMembers() {
                 $.ajax({
                     url: '{{ url('/api/members') }}',
@@ -194,9 +198,9 @@
                             let bValue = getValueByKey(b, sortKey);
 
                             if (typeof aValue === 'string') aValue = aValue
-                            .toLowerCase();
+                                .toLowerCase();
                             if (typeof bValue === 'string') bValue = bValue
-                            .toLowerCase();
+                                .toLowerCase();
 
                             return ascending ? (aValue > bValue ? 1 : -1) : (aValue <
                                 bValue ? 1 : -1);
